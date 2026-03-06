@@ -46,2560 +46,1292 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 10000;
-            min-width: 300px;
-            border-left: 5px solid #10b981;
-        }
-        .notification.show { display: block; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { transform: translateX(400px); } to { transform: translateX(0); } }
-        
-        .chat-notification {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            background: white;
             padding: 15px 20px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            display: none;
-            z-index: 10001;
-            min-width: 320px;
-            border-left: 5px solid #667eea;
-            cursor: pointer;
-            transition: all 0.3s;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideIn 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
-        .chat-notification:hover {
-            transform: translateX(-5px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-        .chat-notification.show { 
-            display: block; 
-            animation: slideInBounce 0.5s ease;
+        .notification.success { background: #10b981; }
+        .notification.error { background: #ef4444; }
+        .notification.info { background: #3b82f6; }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
-        @keyframes slideInBounce { 
-            0% { transform: translateX(400px); }
-            60% { transform: translateX(-10px); }
-            80% { transform: translateX(5px); }
-            100% { transform: translateX(0); }
-        }
-        
+        .login-container h2 { color: #667eea; margin-bottom: 30px; text-align: center; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        .form-group label { display: block; margin-bottom: 8px; color: #374151; font-weight: 600; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e7ff;
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
             font-size: 14px;
-            font-family: inherit;
+            transition: border-color 0.3s;
         }
-        .counter-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            border: none;
-            background: #667eea;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            font-weight: bold;
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
         }
-        .counter-btn:hover { background: #5568d3; transform: scale(1.1); }
-        .counter-display { font-size: 36px; font-weight: bold; color: #667eea; min-width: 80px; text-align: center; }
-        .pax-counter { display: flex; align-items: center; gap: 15px; margin-top: 15px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .stat-card h3 { font-size: 14px; color: #6b7280; margin-bottom: 8px; }
-        .stat-card .number { font-size: 32px; font-weight: bold; color: #667eea; }
-        .group-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            border-left: 5px solid #667eea;
-            margin-bottom: 15px;
-        }
-        .restriction-badge { display: inline-block; background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-size: 12px; margin-top: 5px; }
-        .gps-indicator { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #10b981; animation: blink 2s infinite; margin-right: 8px; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        .distance-badge { display: inline-block; padding: 6px 12px; background: #10b981; color: white; border-radius: 20px; font-weight: bold; font-size: 14px; }
-        .distance-badge.near { background: #ef4444; }
-        
-        .chat-window {
-            position: fixed;
-            width: 400px;
-            height: 500px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            display: none;
-            flex-direction: column;
-            z-index: 9999;
-        }
-        .chat-window.open { display: flex; }
-        .chat-window-header {
-            background: #667eea;
-            color: white;
-            padding: 15px;
-            border-radius: 15px 15px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: move;
-        }
-        .chat-window-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            background: #f9fafb;
-        }
-        .chat-window-footer {
-            padding: 15px;
-            background: white;
-            border-radius: 0 0 15px 15px;
-            border-top: 2px solid #e5e7eb;
-        }
-        .chat-message {
-            padding: 10px 15px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            max-width: 80%;
-        }
-        .chat-message.guide { background: #e0e7ff; margin-left: auto; text-align: right; }
-        .chat-message.restaurant { background: white; border: 1px solid #e5e7eb; }
-        .chat-message .sender { font-size: 11px; color: #6b7280; margin-bottom: 4px; font-weight: 600; }
-        .chat-message .time { font-size: 10px; color: #9ca3af; margin-top: 4px; }
-        
         .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
             display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        }
-        .modal.open { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        .dish-checkbox {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background: #f9fafb;
-            border-radius: 8px;
-            margin-bottom: 8px;
-        }
-        .dish-checkbox input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            cursor: pointer;
-        }
-        
-        /* Indicador de GPS Real */
-        .gps-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: white;
-            padding: 12px 20px;
-            border-radius: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 9998;
-            font-size: 14px;
-        }
-        .gps-status.active { border-left: 4px solid #10b981; }
-        .gps-status.inactive { border-left: 4px solid #ef4444; }
-        
-        /* Badge de notificación de chat */
-        .chat-notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: #ef4444;
-            color: white;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        /* Badge de auto-guardado */
-        .save-indicator {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: #10b981;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: 9998;
-        }
-        .save-indicator.show { opacity: 1; }
-        
-        /* ==================== LOGIN SYSTEM STYLES ==================== */
-        .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-header h3 { color: #667eea; }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #9ca3af;
+        }
+        .close-btn:hover { color: #ef4444; }
+        .code-display {
+            background: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .code-display .code {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 4px;
+            margin: 10px 0;
+        }
+        .order-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        .order-card.served {
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .order-info h4 { color: #1f2937; margin-bottom: 5px; }
+        .order-info p { color: #6b7280; font-size: 14px; margin: 3px 0; }
+        .order-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .order-items {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .order-items h5 { margin-bottom: 10px; color: #374151; }
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .order-item:last-child { border-bottom: none; }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .menu-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+        .menu-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 6px rgba(102, 126, 234, 0.1);
+        }
+        .menu-item.selected {
+            border-color: #667eea;
+            background: #eef2ff;
+        }
+        .menu-item h4 { color: #1f2937; margin-bottom: 8px; }
+        .menu-item p { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .quantity-control button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
         }
-        .login-overlay.hidden { display: none; }
-        
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            max-width: 420px;
-            width: 90%;
-        }
-        .login-box h1 {
-            color: #667eea;
+        .quantity-control input[type="number"] {
+            width: 60px;
             text-align: center;
-            margin-bottom: 10px;
-            font-size: 28px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 6px;
+            font-size: 14px;
         }
-        .login-box p {
+        .quantity-control span {
+            font-weight: 600;
+            color: #1f2937;
+            min-width: 30px;
             text-align: center;
-            color: #6b7280;
-            margin-bottom: 30px;
         }
-        .user-info-header {
+        .pax-control {
             display: flex;
             align-items: center;
             gap: 15px;
-            margin-bottom: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
-        .user-badge {
-            background: #e0e7ff;
-            color: #667eea;
-            padding: 8px 16px;
-            border-radius: 20px;
+        .pax-control label { font-weight: 600; color: #374151; }
+        .pax-control .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pax-control button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #667eea;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .pax-control input[type="number"] {
+            width: 80px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            padding: 8px;
+        }
+        .chat-container {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            max-height: 300px;
+        }
+        .chat-message {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chat-message .sender {
             font-weight: 600;
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 13px;
+        }
+        .chat-message .text {
+            color: #374151;
             font-size: 14px;
         }
-        .btn-logout { background: #6b7280; color: white; }
-        
-        /* User Management Styles */
-        .users-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .chat-message .time {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 5px;
         }
-        .users-table th, .users-table td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
+        .chat-input {
+            display: flex;
+            gap: 10px;
         }
-        .users-table th {
-            background: #f3f4f6;
-            font-weight: 600;
-            color: #374151;
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            resize: none;
+            font-family: inherit;
         }
-        .role-badge {
-            display: inline-block;
-            padding: 4px 12px;
+        #map {
+            height: 300px;
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
+            margin-bottom: 20px;
+            background: #e5e7eb;
         }
-        .role-badge.admin { background: #dbeafe; color: #1e40af; }
-        .role-badge.cocina { background: #fef3c7; color: #92400e; }
-        .role-badge.servicio { background: #fce7f3; color: #9f1239; }
+        .eta-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .eta-display h3 { margin-bottom: 10px; }
+        .eta-display .time {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .eta-display .distance { font-size: 18px; opacity: 0.9; }
+        .access-code-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        .access-code-item.expired {
+            opacity: 0.6;
+            border-left-color: #9ca3af;
+        }
+        .access-code-item .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .access-code-item .code {
+            font-size: 20px;
+            font-weight: bold;
+            color: #667eea;
+            letter-spacing: 2px;
+        }
+        .access-code-item .info {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .initial-choice {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            flex-wrap: wrap;
+        }
+        .choice-card {
+            background: white;
+            padding: 60px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            min-width: 280px;
+        }
+        .choice-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        .choice-card .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        .choice-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        .choice-card p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+        .guide-access-panel {
+            max-width: 500px;
+            margin: 100px auto;
+        }
+        @media (max-width: 768px) {
+            .order-header { flex-direction: column; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .initial-choice { flex-direction: column; padding: 20px; }
+            .choice-card { min-width: auto; width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <!-- LOGIN OVERLAY -->
-    <div id="loginOverlay" class="login-overlay">
-        <!-- Selección de tipo de usuario -->
-        <div id="userTypeSelection" class="login-box">
-            <h1>🎯 Sistema ETA</h1>
-            <p>Gestión de Grupos Turísticos</p>
-            
-            <button class="btn btn-primary" style="width: 100%; padding: 20px; font-size: 18px; margin-bottom: 15px;" onclick="showStaffLogin()">
-                🏢 Soy del Restaurante
-                <div style="font-size: 13px; margin-top: 5px; opacity: 0.8;">Recepción • Cocina • Servicio</div>
-            </button>
-            
-            <button class="btn btn-info" style="width: 100%; padding: 20px; font-size: 18px;" onclick="showGuideAccess()">
-                👨‍✈️ Soy Guía Turístico
-                <div style="font-size: 13px; margin-top: 5px; opacity: 0.8;">Acceso con código</div>
-            </button>
+    <div id="initialChoice" class="initial-choice">
+        <div class="choice-card" onclick="showRestaurantLogin()">
+            <div class="icon">🏢</div>
+            <h2>Soy del Restaurante</h2>
+            <p>Acceso para personal del restaurante</p>
         </div>
-        
-        <!-- Login para personal del restaurante -->
-        <div id="staffLoginBox" class="login-box" style="display: none;">
-            <button class="btn btn-secondary btn-small" onclick="backToSelection()" style="margin-bottom: 15px;">
-                ← Volver
-            </button>
-            
-            <h1>🏢 Personal del Restaurante</h1>
-            <p>Ingresa con tu usuario y contraseña</p>
-            
+        <div class="choice-card" onclick="showGuideAccess()">
+            <div class="icon">👨‍✈️</div>
+            <h2>Soy Guía Turístico</h2>
+            <p>Hacer pedido anticipado</p>
+        </div>
+    </div>
+
+    <div id="restaurantLogin" style="display: none;">
+        <div class="login-container">
+            <h2>🏢 Acceso Restaurante</h2>
             <div class="form-group">
                 <label>Usuario</label>
-                <input type="text" id="loginUsername" placeholder="Ingresa tu usuario">
+                <input type="text" id="loginUsername" placeholder="Ingrese su usuario">
             </div>
-            
             <div class="form-group">
                 <label>Contraseña</label>
-                <input type="password" id="loginPassword" placeholder="Ingresa tu contraseña" onkeypress="if(event.key==='Enter') login()">
+                <input type="password" id="loginPassword" placeholder="Ingrese su contraseña">
             </div>
-            
-            <button class="btn btn-primary" style="width: 100%; padding: 15px; font-size: 16px;" onclick="login()">
-                🔐 Iniciar Sesión
-            </button>
-            
-            <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
-                <p style="font-size: 13px; color: #6b7280; margin-bottom: 10px;">Usuarios de prueba:</p>
-                <p style="font-size: 12px; color: #9ca3af;">admin / admin123 (Administrador)</p>
-                <p style="font-size: 12px; color: #9ca3af;">cocina / cocina123 (Cocina)</p>
-                <p style="font-size: 12px; color: #9ca3af;">servicio / servicio123 (Servicio)</p>
-            </div>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="login()">Iniciar Sesión</button>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="backToInitial()">Volver</button>
         </div>
-        
-        <!-- Acceso para guías -->
-        <div id="guideAccessBox" class="login-box" style="display: none;">
-            <button class="btn btn-secondary btn-small" onclick="backToSelection()" style="margin-bottom: 15px;">
-                ← Volver
-            </button>
-            
-            <h1>👨‍✈️ Acceso para Guías</h1>
-            <p>Ingresa el código que te proporcionó el restaurante</p>
-            
+    </div>
+
+    <div id="guideAccessPanel" class="guide-access-panel" style="display: none;">
+        <div class="panel">
+            <h2 style="color: #667eea; text-align: center; margin-bottom: 30px;">👨‍✈️ Acceso Guía Turístico</h2>
             <div class="form-group">
                 <label>Código de Acceso</label>
-                <input type="text" id="guideCodeInput" placeholder="Ej: TOUR2024" style="text-transform: uppercase; text-align: center; font-size: 18px; font-weight: bold; letter-spacing: 2px;" onkeypress="if(event.key==='Enter') guideDirectAccess()">
+                <input type="text" id="guideAccessCode" placeholder="Ingrese el código proporcionado" style="text-transform: uppercase;">
             </div>
-            
-            <button class="btn btn-info" style="width: 100%; padding: 15px; font-size: 16px;" onclick="guideDirectAccess()">
-                ✅ Acceder
-            </button>
-            
-            <div style="text-align: center; margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 8px;">
-                <p style="font-size: 13px; color: #0369a1;">
-                    💡 <strong>¿No tienes código?</strong><br>
-                    Solicítalo al restaurante antes de tu visita
-                </p>
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" onclick="guideDirectAccess()">Acceder</button>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="backToInitial()">Volver</button>
+        </div>
+    </div>
+
+    <div id="app" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>🍽️ Sistema ETA - Gestión de Grupos Turísticos</h1>
+                <div class="view-toggle">
+                    <button class="btn btn-secondary" onclick="showView('codes')" id="btnCodes">🔑 Códigos de Acceso</button>
+                    <button class="btn btn-secondary" onclick="showView('orders')" id="btnOrders">📋 Pedidos Pendientes</button>
+                    <button class="btn btn-secondary" onclick="showView('served')" id="btnServed">✅ Pedidos Servidos</button>
+                    <button class="btn btn-danger" onclick="logout()">🚪 Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <div id="viewCodes" class="view">
+                <div class="panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #667eea;">🔑 Códigos de Acceso para Guías</h2>
+                        <button class="btn btn-primary" onclick="openCreateCodeModal()">+ Crear Código</button>
+                    </div>
+                    <div id="accessCodesList"></div>
+                </div>
+            </div>
+
+            <div id="viewOrders" class="view">
+                <div class="panel">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">📋 Pedidos Pendientes</h2>
+                    <div id="ordersList"></div>
+                </div>
+            </div>
+
+            <div id="viewServed" class="view">
+                <div class="panel">
+                    <h2 style="color: #10b981; margin-bottom: 20px;">✅ Pedidos Servidos</h2>
+                    <div id="servedList"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="mainApp" style="display: none;">
-    <div class="container">
-        <div class="header">
-            <h1>🍽️ Sistema ETA - Gestión de Grupos Turísticos (v2.0)</h1>
-            <div class="user-info-header">
-                <span class="user-badge" id="userDisplay">👤 Usuario</span>
-                <button class="btn btn-logout" onclick="logout()" style="padding: 10px 20px; font-size: 14px; font-weight: 600;">🚪 Cerrar Sesión</button>
-                <span style="background: #d1fae5; color: #065f46; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
-                    ✅ Con Persistencia
-                </span>
-                <span id="gpsStatusBadge" style="background: #fef3c7; color: #92400e; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;">
-                    📍 GPS: Verificando...
-                </span>
+    <div id="guideView" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>👨‍✈️ Panel de Guía Turístico</h1>
+                <div class="view-toggle">
+                    <button class="btn btn-secondary" onclick="showGuideView('menu')" id="btnGuideMenu">🍽️ Hacer Pedido</button>
+                    <button class="btn btn-secondary" onclick="showGuideView('chat')" id="btnGuideChat">💬 Chat</button>
+                    <button class="btn btn-danger" onclick="guideLogout()">🚪 Salir</button>
+                </div>
             </div>
-            <div class="view-toggle" id="viewToggle">
-                <!-- Botones generados dinámicamente según el rol del usuario -->
-            </div>
-        </div>
-        
-        <!-- Panel Guía -->
-        <div id="guide" class="view active">
-            <div class="panel" style="max-width: 900px; margin: 0 auto;">
-                <h2 style="color: #667eea; margin-bottom: 20px;">👨‍✈️ Panel del Guía Turístico</h2>
-                
-                <div id="guideAccessSection">
-                    <div style="background: #e0e7ff; padding: 30px; border-radius: 12px; text-align: center;">
-                        <h3 style="color: #667eea; margin-bottom: 20px;">Ingresa tu Código de Acceso</h3>
-                        <p style="color: #6b7280; margin-bottom: 20px;">El restaurante te proporcionó un código único para acceder a tu menú personalizado</p>
-                        <input type="text" id="guideAccessCode" placeholder="Código de Acceso (ej: GRUPO001)" 
-                            style="width: 100%; max-width: 300px; padding: 15px; border: 2px solid #667eea; border-radius: 8px; font-size: 16px; text-align: center; text-transform: uppercase; margin-bottom: 20px;">
-                        <br>
-                        <button class="btn btn-primary" onclick="accessGuideMenu()" style="padding: 15px 40px; font-size: 16px;">Acceder</button>
+
+            <div id="guideMenuView" class="view">
+                <div class="panel">
+                    <div id="map"></div>
+                    <div class="eta-display" id="etaDisplay" style="display: none;">
+                        <h3>⏱️ Tiempo Estimado de Llegada</h3>
+                        <div class="time" id="etaTime">--</div>
+                        <div class="distance" id="etaDistance">Calculando...</div>
+                    </div>
+                    
+                    <div class="pax-control">
+                        <label>👥 Cantidad de Personas (PAX):</label>
+                        <div class="controls">
+                            <button onclick="updatePax(-1)">-</button>
+                            <input type="number" id="paxCount" value="1" min="1" max="999" onchange="updatePaxFromInput()">
+                            <button onclick="updatePax(1)">+</button>
+                        </div>
+                    </div>
+
+                    <h3 style="color: #667eea; margin-bottom: 15px;">🍽️ Seleccione los Platos</h3>
+                    <div id="menuList" class="menu-grid"></div>
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button class="btn btn-success" style="padding: 15px 40px; font-size: 16px;" onclick="sendOrder()">📤 Enviar Pedido</button>
                     </div>
                 </div>
-                
-                <div id="guideOrderSection" style="display: none;">
-                    <div style="background: #d1fae5; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                        <strong>✅ Acceso autorizado:</strong> <span id="currentGuideName"></span>
-                        <button class="btn btn-secondary btn-small" onclick="logoutGuide()" style="margin-left: 10px;">Salir</button>
-                    </div>
-                    
-                    <div style="background: #e0e7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px;">
-                            <div style="flex: 1;">
-                                <label style="font-weight: 600; font-size: 16px; color: #667eea;">📋 Nombre del Grupo</label>
-                                <div style="font-size: 24px; font-weight: bold; color: #667eea; margin-top: 8px;" id="displayGroupCode"></div>
-                            </div>
-                            <button class="btn btn-secondary btn-small" onclick="toggleCustomName()" id="toggleNameBtn">✏️ Personalizar</button>
-                        </div>
-                        <input type="text" id="groupName" placeholder="Nombre personalizado (opcional)" style="display: none; margin-top: 10px;">
-                        <small style="color: #6b7280; display: block; margin-top: 8px;">Se usará el código del grupo. Puedes personalizarlo si lo deseas.</small>
-                    </div>
-                    
-                    <div style="background: #fef3c7; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                        <label style="font-weight: 600; font-size: 16px;">Número de Pasajeros (PAX)</label>
-                        <div class="pax-counter">
-                            <button class="counter-btn" onclick="adjustPax(-1)">−</button>
-                            <input type="number" class="counter-display" id="paxCount" value="1" min="1" max="999" 
-                                style="width: 80px; text-align: center; font-size: 24px; font-weight: bold; border: 2px solid #667eea; border-radius: 8px; padding: 10px;"
-                                onchange="updatePaxFromInput()" />
-                            <button class="counter-btn" onclick="adjustPax(1)">+</button>
-                        </div>
-                    </div>
-                    
-                    <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="color: #0369a1; margin-bottom: 15px;">🍽️ Tu Menú Personalizado</h3>
-                        <div id="menuContainer"></div>
-                    </div>
-                    
-                    <div style="background: #e0e7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 15px;">📋 Resumen del Pedido</h3>
-                        <div id="orderSummary"></div>
-                    </div>
-                    
-                    <div id="gpsSection" style="background: #d1fae5; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            <h4 style="color: #065f46; margin: 0;">📍 Ubicación GPS</h4>
-                            <button class="btn btn-success btn-small" onclick="requestGPSPermission()" id="btnActivateGPS">
-                                Activar GPS
-                            </button>
-                        </div>
-                        <div id="gpsInfo" style="font-size: 14px; color: #065f46;"></div>
-                    </div>
-                    
-                    <button class="btn btn-primary" onclick="sendOrder()" id="btnSendOrder" style="width: 100%; padding: 18px; font-size: 18px;">
-                        📤 Enviar Pedido al Restaurante
-                    </button>
-                    
-                    <button class="btn btn-warning" onclick="enableOrderModification()" id="btnModifyOrder" style="width: 100%; padding: 18px; font-size: 18px; display: none; margin-top: 15px;">
-                        ✏️ Modificar Pedido
-                    </button>
-                    
-                    <div style="background: white; padding: 20px; border-radius: 12px; margin-top: 30px; border: 2px solid #667eea;">
-                        <h3 style="color: #667eea; margin-bottom: 15px;">💬 Chat con el Restaurante</h3>
-                        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 15px; max-height: 300px; overflow-y: auto;" id="guideMainChat">
-                            <div style="text-align: center; color: #9ca3af; padding: 20px;">Envía tu pedido para activar el chat</div>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="guideMessageInput" placeholder="Escribe un mensaje..." 
-                                style="flex: 1; padding: 12px; border: 2px solid #e0e7ff; border-radius: 8px;">
+            </div>
+
+            <div id="guideChatView" class="view">
+                <div class="panel">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">💬 Chat con Restaurante</h2>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="guideChatMessages"></div>
+                        <div class="chat-input">
+                            <textarea id="guideChatInput" rows="2" placeholder="Escriba su mensaje..."></textarea>
                             <button class="btn btn-primary" onclick="sendGuideMessage()">Enviar</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Panel Recepción -->
-        <div id="reception" class="view">
-            <div class="panel">
-                <h2 style="color: #667eea; margin-bottom: 20px;">📊 Panel de Recepción</h2>
-                
-                <div style="background: #fffbeb; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #f59e0b;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: #f59e0b; margin: 0;">🍴 Gestión de Menú</h3>
-                        <button class="btn btn-primary" onclick="toggleDishForm()">+ Agregar Plato</button>
-                    </div>
-                    
-                    <div id="dishFormReception" style="display: none; background: white; padding: 20px; border-radius: 8px; margin-top: 15px;">
-                        <h4 style="margin-bottom: 15px;">Nuevo Plato</h4>
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Nombre del Plato</label>
-                            <input type="text" id="newDishName" placeholder="Ej: Arroz con Mariscos">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Categoría</label>
-                            <select id="newDishCategory">
-                                <option value="Entradas">🥗 Entradas</option>
-                                <option value="Platos Fuertes">🍖 Platos Fuertes</option>
-                                <option value="Postres">🍰 Postres</option>
-                                <option value="Bebidas">🥤 Bebidas</option>
-                            </select>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 15px;">
-                            <label>Precio (USD)</label>
-                            <input type="number" id="newDishPrice" placeholder="0.00" step="0.01" min="0">
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="saveDish()">💾 Guardar</button>
-                            <button class="btn btn-secondary" onclick="toggleDishForm()">Cancelar</button>
-                        </div>
-                    </div>
-                    
-                    <div id="currentDishes" style="margin-top: 15px;"></div>
-                </div>
-                
-                <div style="background: #e0e7ff; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #667eea;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h3 style="color: #667eea; margin: 0;">🔑 Códigos de Acceso para Guías</h3>
-                        <button class="btn btn-primary" onclick="showCreateAccessCodeModal()">+ Crear Código</button>
-                    </div>
-                    <div id="accessCodesList"></div>
-                </div>
-                
-                <div class="stats-grid">
-                    <div class="stat-card"><h3>Grupos Activos</h3><div class="number" id="totalGroups">0</div></div>
-                    <div class="stat-card"><h3>Total PAX</h3><div class="number" id="totalPax">0</div></div>
-                </div>
-                <div id="receptionContainer"></div>
-            </div>
-        </div>
-        
-        <!-- Panel Cocina -->
-        <div id="kitchen" class="view">
-            <div class="panel">
-                <h2 style="color: #10b981; margin-bottom: 20px;">👨‍🍳 Panel de Cocina</h2>
-                <div id="kitchenContainer"></div>
-            </div>
-        </div>
-        
-        <!-- Panel Servicio -->
-        <div id="service" class="view">
-            <div class="panel">
-                <h2 style="color: #0369a1; margin-bottom: 20px;">🍽️ Panel de Servicio</h2>
-                <div id="serviceContainer"></div>
-            </div>
-        </div>
-        
-        <!-- Panel Configuración -->
-        <div id="settings" class="view">
-            <div class="panel" style="max-width: 1000px; margin: 0 auto;">
-                <h2 style="color: #f59e0b; margin-bottom: 20px;">⚙️ Configuración del Sistema</h2>
-                
-                <div style="background: #fee2e2; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ef4444;">
-                    <h3 style="color: #ef4444; margin-bottom: 15px;">🗑️ Gestión de Datos</h3>
-                    <p style="margin-bottom: 15px; color: #6b7280;">Los datos se guardan automáticamente en tu navegador</p>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn btn-danger" onclick="clearAllData()">🗑️ Limpiar Todos los Datos</button>
-                        <button class="btn btn-secondary" onclick="exportData()">📥 Exportar Datos</button>
-                    </div>
-                </div>
-                
-                <div style="background: #d1fae5; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10b981;">
-                    <h3 style="color: #10b981; margin-bottom: 15px;">📍 Configuración GPS</h3>
-                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-                        <label style="display: block; margin-bottom: 10px; font-weight: 600;">Dirección del Restaurante:</label>
-                        <input type="text" id="restaurantAddress" placeholder="Av. Amazonas y Colón, Quito" 
-                            style="width: 100%; padding: 12px; border: 2px solid #e0e7ff; border-radius: 8px; margin-bottom: 10px;">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #6b7280;">Latitud:</label>
-                                <input type="number" id="restaurantLat" placeholder="-0.1807" step="0.0001" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #e0e7ff; border-radius: 6px;">
-                            </div>
-                            <div>
-                                <label style="display: block; margin-bottom: 5px; font-size: 14px; color: #6b7280;">Longitud:</label>
-                                <input type="number" id="restaurantLon" placeholder="-78.4678" step="0.0001" 
-                                    style="width: 100%; padding: 10px; border: 2px solid #e0e7ff; border-radius: 6px;">
-                            </div>
-                        </div>
-                        <button class="btn btn-success" onclick="saveRestaurantLocation()" style="width: 100%; margin-top: 10px;">💾 Guardar Ubicación</button>
-                    </div>
-                    
-                    <div style="background: white; padding: 15px; border-radius: 8px;">
-                        <h4 style="margin-bottom: 10px;">Estado GPS:</h4>
-                        <div id="gpsStatusDetail"></div>
-                        <button class="btn btn-primary btn-small" onclick="requestGPSPermission()" style="margin-top: 10px;">📍 Activar GPS</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Panel Gestión de Usuarios (Solo Admin) -->
-        <div id="users" class="view">
-            <div class="panel" style="max-width: 1000px; margin: 0 auto;">
-                <h2 style="color: #667eea; margin-bottom: 20px;">👥 Gestión de Usuarios</h2>
-                
-                <button class="btn btn-primary" onclick="showAddUserForm()">➕ Crear Usuario</button>
-                
-                <div id="addUserForm" style="display: none; margin-top: 20px; padding: 20px; background: #f9fafb; border-radius: 12px;">
-                    <h3 style="margin-bottom: 15px;">Nuevo Usuario</h3>
-                    
-                    <div class="form-group">
-                        <label>Nombre de Usuario</label>
-                        <input type="text" id="newUsername" placeholder="Ej: maria_cocina">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Contraseña</label>
-                        <input type="password" id="newUserPassword" placeholder="Mínimo 6 caracteres">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Rol</label>
-                        <select id="newUserRole">
-                            <option value="cocina">Cocina</option>
-                            <option value="servicio">Servicio</option>
-                            <option value="admin">Administrador</option>
-                        </select>
-                    </div>
-                    
-                    <button class="btn btn-success" onclick="createUser()">✅ Crear Usuario</button>
-                    <button class="btn btn-secondary" onclick="hideAddUserForm()">❌ Cancelar</button>
-                </div>
-                
-                <h3 style="margin-top: 30px; margin-bottom: 15px;">Usuarios del Sistema</h3>
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Rol</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="usersTableBody"></tbody>
-                </table>
-            </div>
-        </div>
     </div>
-    </div>
-    <div class="chat-notification" id="chatNotification"></div>
-    
-    <!-- Indicador de GPS -->
-    <div class="gps-status inactive" id="gpsStatusIndicator">
-        <div class="gps-indicator"></div>
-        <span id="gpsStatusText">GPS Inactivo</span>
-    </div>
-    
-    <!-- Indicador de auto-guardado -->
-    <div class="save-indicator" id="saveIndicator">
-        💾 Guardado automáticamente
-    </div>
-    
-    <!-- Modal para crear código de acceso -->
-    <div class="modal" id="accessCodeModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <h3 style="color: #667eea; margin-bottom: 20px;">Crear Código de Acceso</h3>
-            <div class="form-group">
-                <label>Código de Acceso</label>
-                <input type="text" id="modalAccessCode" placeholder="Ej: GRUPO001" style="text-transform: uppercase;">
-                <small style="color: #6b7280;">Este código lo compartirás con el guía</small>
+
+    <div id="createCodeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear Código de Acceso</h3>
+                <button class="close-btn" onclick="closeCreateCodeModal()">×</button>
             </div>
             <div class="form-group">
-                <label>Nombre del Guía/Grupo</label>
-                <input type="text" id="modalGuideName" placeholder="Ej: Agencia XYZ - Tour Galápagos">
+                <label>Nombre del Grupo</label>
+                <input type="text" id="groupName" placeholder="Ej: Agencia Tours del Pacífico">
             </div>
-            
             <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                    <label style="margin: 0;">Selecciona platos para este grupo:</label>
-                    <div>
-                        <button class="btn btn-small btn-secondary" onclick="selectAllDishes()">✓ Seleccionar Todos</button>
-                        <button class="btn btn-small btn-secondary" onclick="deselectAllDishes()">✗ Quitar Todos</button>
-                    </div>
-                </div>
-                <div id="modalDishList" style="max-height: 350px; overflow-y: auto; border: 2px solid #e0e7ff; border-radius: 8px; padding: 15px;"></div>
+                <label>Cantidad de Personas (PAX)</label>
+                <input type="number" id="groupPax" value="20" min="1">
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-success" onclick="saveAccessCode()">💾 Guardar Código</button>
-                <button class="btn btn-secondary" onclick="closeAccessCodeModal()">Cancelar</button>
+            <button class="btn btn-primary" style="width: 100%;" onclick="generateAccessCode()">Generar Código</button>
+        </div>
+    </div>
+
+    <div id="codeGeneratedModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✅ Código Generado</h3>
+                <button class="close-btn" onclick="closeCodeGeneratedModal()">×</button>
+            </div>
+            <div class="code-display">
+                <p>Código de Acceso:</p>
+                <div class="code" id="generatedCode"></div>
+                <p style="color: #6b7280; margin-top: 10px;">Comparta este código con el guía turístico</p>
+            </div>
+            <button class="btn btn-primary" style="width: 100%;" onclick="closeCodeGeneratedModal()">Entendido</button>
+        </div>
+    </div>
+
+    <div id="chatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💬 Chat con Guía</h3>
+                <button class="close-btn" onclick="closeChatModal()">×</button>
+            </div>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input">
+                    <textarea id="chatInput" rows="2" placeholder="Escriba su mensaje..."></textarea>
+                    <button class="btn btn-primary" onclick="sendMessage()">Enviar</button>
+                </div>
             </div>
         </div>
     </div>
-    
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
     <script>
-        // ==================== FUNCIONES DE NAVEGACIÓN (DEBEN IR PRIMERO) ====================
-        
-        function showStaffLogin() {
-            document.getElementById('userTypeSelection').style.display = 'none';
-            document.getElementById('staffLoginBox').style.display = 'block';
-            document.getElementById('guideAccessBox').style.display = 'none';
-        }
-        
-        function showGuideAccess() {
-            document.getElementById('userTypeSelection').style.display = 'none';
-            document.getElementById('staffLoginBox').style.display = 'none';
-            document.getElementById('guideAccessBox').style.display = 'block';
-        }
-        
-        function backToSelection() {
-            document.getElementById('userTypeSelection').style.display = 'block';
-            document.getElementById('staffLoginBox').style.display = 'none';
-            document.getElementById('guideAccessBox').style.display = 'none';
-        }
-        
-        // ==================== SISTEMA DE AUTENTICACIÓN ====================
-        
-        const AUTH_STORAGE_KEY = 'eta_current_user';
-        const USERS_STORAGE_KEY = 'eta_users';
-        const GUIDE_SESSION_KEY = 'eta_guide_session';
+        // ==================== CONFIGURACIÓN FIREBASE ====================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJckSkqpSqce7jE1f7UwK08q6XIsp9ihc",
+            authDomain: "eta-system-21b43.firebaseapp.com",
+            databaseURL: "https://eta-system-21b43-default-rtdb.firebaseio.com",
+            projectId: "eta-system-21b43",
+            storageBucket: "eta-system-21b43.firebasestorage.app",
+            messagingSenderId: "988463938521",
+            appId: "1:988463938521:web:a894f00f2f28dc514bb7c8"
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // ==================== CONFIGURACIÓN MULTI-TENANT ====================
+        // Por ahora usamos un restaurante demo, pero esto se puede personalizar por URL
+        const RESTAURANT_ID = 'demo-restaurant';
+        const db = {
+            ref: (path) => database.ref(`restaurantes/${RESTAURANT_ID}/${path}`)
+        };
+
+        // ==================== DATOS INICIALES ====================
+        const users = {
+            admin: { password: 'admin123', role: 'admin', name: 'Administrador' },
+            cocina: { password: 'cocina123', role: 'kitchen', name: 'Cocina' },
+            servicio: { password: 'servicio123', role: 'service', name: 'Servicio' }
+        };
+
+        const menuData = [
+            { id: 1, name: 'Ceviche de Pescado', description: 'Pescado fresco marinado', category: 'Entradas', qty: 0 },
+            { id: 2, name: 'Empanadas de Queso', description: 'Empanadas caseras', category: 'Entradas', qty: 0 },
+            { id: 3, name: 'Sopa de Mariscos', description: 'Sopa caliente con mariscos frescos', category: 'Entradas', qty: 0 },
+            { id: 4, name: 'Lomo Saltado', description: 'Carne salteada con papas', category: 'Principales', qty: 0 },
+            { id: 5, name: 'Arroz con Mariscos', description: 'Arroz con mariscos frescos', category: 'Principales', qty: 0 },
+            { id: 6, name: 'Trucha Frita', description: 'Trucha fresca del día', category: 'Principales', qty: 0 },
+            { id: 7, name: 'Pollo a la Parrilla', description: 'Pollo marinado a la parrilla', category: 'Principales', qty: 0 },
+            { id: 8, name: 'Flan de Caramelo', description: 'Postre tradicional', category: 'Postres', qty: 0 },
+            { id: 9, name: 'Helado Artesanal', description: 'Helado hecho en casa', category: 'Postres', qty: 0 },
+            { id: 10, name: 'Tres Leches', description: 'Pastel tradicional ecuatoriano', category: 'Postres', qty: 0 }
+        ];
+
+        // ==================== VARIABLES GLOBALES ====================
         let currentUser = null;
-        let isGuideMode = false;
-        
-        // Función temporal de notificación (se sobrescribirá después)
-        function showNotification(message) {
-            const notif = document.getElementById('notification');
-            if (notif) {
-                notif.innerHTML = `<h3>${message}</h3>`;
-                notif.classList.add('show');
-                setTimeout(() => notif.classList.remove('show'), 3000);
-            } else {
-                alert(message);
-            }
+        let currentView = 'codes';
+        let currentGuideView = 'menu';
+        let currentAccessCode = null;
+        let currentOrderId = null;
+        let paxCount = 1;
+        let menu = JSON.parse(JSON.stringify(menuData));
+        let userLocation = null;
+        let map = null;
+        let marker = null;
+        let watchId = null;
+
+        const RESTAURANT_LOCATION = { lat: -0.1807, lng: -78.4678 }; // Quito, Ecuador
+
+        // ==================== INICIALIZAR DATOS DEMO ====================
+        function initializeDemoData() {
+            db.ref('codes').once('value', (snapshot) => {
+                if (!snapshot.exists()) {
+                    // Crear código demo si no existe
+                    db.ref('codes').push({
+                        code: 'DEMO001',
+                        groupName: 'Agencia Tours del Pacífico',
+                        pax: 25,
+                        createdAt: Date.now(),
+                        expired: false,
+                        availableDishes: menu.slice(0, 3).map(d => ({ id: d.id, name: d.name }))
+                    });
+                }
+            });
         }
-        
-        // Acceso directo para guías
-        function guideDirectAccess() {
-            const code = document.getElementById('guideCodeInput').value.trim().toUpperCase();
-            
-            if (!code) {
-                showNotification('❌ Por favor ingresa un código');
-                return;
-            }
-            
-            // Verificar si el código existe
-            const accessCodes = loadFromStorage(STORAGE_KEYS.ACCESS_CODES, {});
-            
-            if (!accessCodes[code]) {
-                showNotification('❌ Código inválido. Verifica con el restaurante.');
-                return;
-            }
-            
-            // Verificar si el código expiró
-            if (accessCodes[code].expired) {
-                showNotification('🔒 Este código ya fue utilizado y el servicio fue completado. Solicita un nuevo código al restaurante.');
-                return;
-            }
-            
-            // Modo guía activado
-            isGuideMode = true;
-            currentAccessCode = code;
-            
-            // Guardar sesión de guía
-            sessionStorage.setItem(GUIDE_SESSION_KEY, JSON.stringify({
-                code: code,
-                timestamp: new Date().toISOString()
-            }));
-            
-            // Ocultar login y mostrar app
-            document.getElementById('loginOverlay').classList.add('hidden');
-            document.getElementById('mainApp').style.display = 'block';
-            
-            // Configurar interfaz para guía
-            setupGuideInterface();
-            
-            // Validar código automáticamente
-            document.getElementById('guideAccessCode').value = code;
-            accessGuideMenu();
-            
-            showNotification(`✅ Bienvenido ${accessCodes[code].guideName}`);
+
+        // Inicializar al cargar
+        setTimeout(initializeDemoData, 1000);
+
+        // ==================== FUNCIONES DE NOTIFICACIÓN ====================
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
         }
-        
-        function setupGuideInterface() {
-            // Ocultar header completo para guías
-            document.querySelector('.header').style.display = 'none';
-            
-            // Mostrar solo el panel de guía
-            document.getElementById('guide').classList.add('active');
-            document.getElementById('guide').style.display = 'block';
-            
-            // Agregar botón de salir en el panel de guía
-            const guidePanel = document.getElementById('guide');
-            const logoutBtn = document.createElement('div');
-            logoutBtn.style.cssText = 'text-align: center; margin-bottom: 20px;';
-            logoutBtn.innerHTML = `
-                <button class="btn btn-logout" onclick="logoutGuide()">
-                    🚪 Cerrar Sesión
-                </button>
-            `;
-            guidePanel.insertBefore(logoutBtn, guidePanel.firstChild);
+
+        // ==================== FUNCIONES DE NAVEGACIÓN ====================
+        function showRestaurantLogin() {
+            document.getElementById('initialChoice').style.display = 'none';
+            document.getElementById('restaurantLogin').style.display = 'block';
         }
-        
-        function logoutGuide() {
-            if (confirm('¿Estás seguro que deseas salir?')) {
-                // Borrar TODA la sesión
-                sessionStorage.clear();
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-                
-                // Recargar página
-                window.location.reload();
-            }
+
+        function showGuideAccess() {
+            document.getElementById('initialChoice').style.display = 'none';
+            document.getElementById('guideAccessPanel').style.display = 'block';
         }
-        
-        function checkGuideSession() {
-            // PRIMERO: Verificar si hay flag de logout
-            const logoutFlag = sessionStorage.getItem('LOGOUT_FLAG');
-            if (logoutFlag === 'true') {
-                // Limpiar TODO
-                sessionStorage.clear();
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-                
-                // Forzar estado inicial
-                document.getElementById('loginOverlay').classList.remove('hidden');
-                document.getElementById('loginOverlay').style.display = 'flex';
-                document.getElementById('mainApp').style.display = 'none';
-                document.getElementById('userTypeSelection').style.display = 'block';
-                document.getElementById('staffLoginBox').style.display = 'none';
-                document.getElementById('guideAccessBox').style.display = 'none';
-                
-                return false;
-            }
-            
-            // Continuar normal
-            const guideSession = sessionStorage.getItem(GUIDE_SESSION_KEY);
-            if (guideSession) {
-                const session = JSON.parse(guideSession);
-                // Auto-login como guía
-                document.getElementById('guideCodeInput').value = session.code;
-                guideDirectAccess();
-                return true;
-            }
-            return false;
+
+        function backToInitial() {
+            document.getElementById('restaurantLogin').style.display = 'none';
+            document.getElementById('guideAccessPanel').style.display = 'none';
+            document.getElementById('initialChoice').style.display = 'flex';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('guideAccessCode').value = '';
         }
-        
-        // Inicializar usuarios por defecto
-        function initDefaultUsers() {
-            let users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY));
-            if (!users || users.length === 0) {
-                users = [
-                    { username: 'admin', password: 'admin123', role: 'admin', name: 'Administrador' },
-                    { username: 'cocina', password: 'cocina123', role: 'cocina', name: 'Cocina' },
-                    { username: 'servicio', password: 'servicio123', role: 'servicio', name: 'Servicio' }
-                ];
-                localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-            }
-            return users;
-        }
-        
-        // Login
+
+        // ==================== LOGIN RESTAURANTE ====================
         function login() {
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
-            
+
             if (!username || !password) {
-                showNotification('❌ Por favor ingresa usuario y contraseña');
+                showNotification('Por favor complete todos los campos', 'error');
                 return;
             }
-            
-            const users = initDefaultUsers();
-            const user = users.find(u => u.username === username && u.password === password);
-            
-            if (user) {
-                currentUser = user;
-                localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('userDisplay').textContent = `👤 ${user.name || user.username}`;
-                setupViewsForRole();
-                showNotification(`✅ Bienvenido ${user.name || user.username}`);
+
+            const user = users[username];
+            if (user && user.password === password) {
+                currentUser = { username, ...user };
+                document.getElementById('restaurantLogin').style.display = 'none';
+                document.getElementById('app').style.display = 'block';
+                
+                // Ocultar botón de códigos si no es admin
+                if (user.role !== 'admin') {
+                    document.getElementById('btnCodes').style.display = 'none';
+                }
+                
+                showNotification(`¡Bienvenido ${user.name}!`, 'success');
+                showView('orders');
             } else {
-                showNotification('❌ Usuario o contraseña incorrectos');
+                showNotification('Usuario o contraseña incorrectos', 'error');
             }
         }
-        
-        // Logout
+
         function logout() {
-            if (confirm('¿Estás seguro que deseas cerrar sesión?')) {
-                currentUser = null;
-                localStorage.removeItem(AUTH_STORAGE_KEY);
-                location.reload();
-            }
+            currentUser = null;
+            document.getElementById('app').style.display = 'none';
+            document.getElementById('initialChoice').style.display = 'flex';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            showNotification('Sesión cerrada', 'info');
         }
-        
-        // Verificar sesión al cargar
-        function checkSession() {
-            // Primero verificar si hay sesión de guía
-            if (checkGuideSession()) {
+
+        // ==================== ACCESO GUÍA ====================
+        function guideDirectAccess() {
+            const code = document.getElementById('guideAccessCode').value.trim().toUpperCase().replace(/\s/g, '');
+            
+            if (!code) {
+                showNotification('Por favor ingrese un código', 'error');
                 return;
             }
-            
-            // Si no, verificar sesión de staff
-            const savedUser = localStorage.getItem(AUTH_STORAGE_KEY);
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('userDisplay').textContent = `👤 ${currentUser.name || currentUser.username}`;
-                setupViewsForRole();
-            }
-        }
-        
-        // Configurar vistas según el rol
-        function setupViewsForRole() {
-            const viewToggle = document.getElementById('viewToggle');
-            viewToggle.innerHTML = '';
-            
-            const role = currentUser.role;
-            
-            if (role === 'admin') {
-                viewToggle.innerHTML = `
-                    <button class="btn btn-primary" onclick="showView('reception')">📊 Recepción</button>
-                    <button class="btn btn-secondary" onclick="showView('guide')">👨‍✈️ Guía</button>
-                    <button class="btn btn-info" onclick="showView('kitchen')">👨‍🍳 Cocina</button>
-                    <button class="btn btn-success" onclick="showView('service')">🍽️ Servicio</button>
-                    <button class="btn btn-secondary" onclick="showView('users')">👥 Usuarios</button>
-                    <button class="btn btn-warning" onclick="showView('settings')">⚙️ Config</button>
-                `;
-                showView('reception');
-            } else if (role === 'cocina') {
-                viewToggle.innerHTML = `
-                    <button class="btn btn-info" onclick="showView('kitchen')">👨‍🍳 Cocina</button>
-                `;
-                showView('kitchen');
-            } else if (role === 'servicio') {
-                viewToggle.innerHTML = `
-                    <button class="btn btn-success" onclick="showView('service')">🍽️ Servicio</button>
-                `;
-                showView('service');
-            }
-        }
-        
-        // ==================== GESTIÓN DE USUARIOS ====================
-        
-        function showAddUserForm() {
-            document.getElementById('addUserForm').style.display = 'block';
-        }
-        
-        function hideAddUserForm() {
-            document.getElementById('addUserForm').style.display = 'none';
-            document.getElementById('newUsername').value = '';
-            document.getElementById('newUserPassword').value = '';
-        }
-        
-        // ==================== MARCAR COMO SERVIDO ====================
-        
-        function markAsServed(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            if (confirm(`¿Marcar como servido el pedido de "${order.groupName}"?`)) {
-                // Marcar con timestamp
-                order.served = true;
-                order.servedAt = new Date().toISOString();
-                
-                // Expirar el código de acceso usado
-                if (order.accessCode && accessCodes[order.accessCode]) {
-                    accessCodes[order.accessCode].expired = true;
-                    accessCodes[order.accessCode].expiredAt = new Date().toISOString();
-                    saveToStorage(STORAGE_KEYS.ACCESS_CODES, accessCodes);
-                }
-                
-                // Guardar
-                saveToStorage(STORAGE_KEYS.ORDERS, orders);
-                
-                // Actualizar vistas
-                updateKitchen();
-                updateService();
-                updateReception();
-                
-                showNotification(`✅ Pedido de ${order.groupName} marcado como servido`);
-            }
-        }
-        
-        // Filtrar solo pedidos activos (no servidos)
-        function getActiveOrders() {
-            return orders.filter(o => !o.served);
-        }
-        
-        // Obtener pedidos servidos
-        function getServedOrders() {
-            return orders.filter(o => o.served);
-        }
-        
-        // Auto-archivar a medianoche
-        function checkAndArchiveServed() {
-            const now = new Date();
-            const servedOrders = getServedOrders();
-            
-            servedOrders.forEach(order => {
-                const servedDate = new Date(order.servedAt);
-                // Si fue servido hace más de un día, archivar
-                if (now - servedDate > 24 * 60 * 60 * 1000) {
-                    order.archived = true;
+
+            db.ref('codes').orderByChild('code').equalTo(code).once('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    const codeData = Object.values(snapshot.val())[0];
+                    
+                    if (codeData.expired) {
+                        showNotification('🔒 Este código ya fue utilizado y el servicio fue completado', 'error');
+                        return;
+                    }
+
+                    currentAccessCode = code;
+                    paxCount = codeData.pax || 1;
+                    
+                    document.getElementById('guideAccessPanel').style.display = 'none';
+                    document.getElementById('guideView').style.display = 'block';
+                    
+                    initializeGuideView();
+                    showNotification('✅ Acceso concedido', 'success');
+                } else {
+                    showNotification('❌ Código inválido', 'error');
                 }
             });
-            
-            saveToStorage(STORAGE_KEYS.ORDERS, orders);
         }
-        
-        // ==================== GESTIÓN DE USUARIOS (continuación) ====================
-        
-        function createUser() {
-            const username = document.getElementById('newUsername').value.trim();
-            const password = document.getElementById('newUserPassword').value;
-            const role = document.getElementById('newUserRole').value;
-            
-            if (!username || !password) {
-                showNotification('❌ Completa todos los campos');
-                return;
-            }
-            
-            if (password.length < 6) {
-                showNotification('❌ La contraseña debe tener al menos 6 caracteres');
-                return;
-            }
-            
-            const users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)) || [];
-            
-            if (users.find(u => u.username === username)) {
-                showNotification('❌ Este nombre de usuario ya existe');
-                return;
-            }
-            
-            const roleNames = {
-                'admin': 'Administrador',
-                'cocina': 'Cocina',
-                'servicio': 'Servicio'
-            };
-            
-            users.push({
-                username,
-                password,
-                role,
-                name: roleNames[role]
-            });
-            
-            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-            showNotification('✅ Usuario creado correctamente');
-            hideAddUserForm();
-            updateUsersTable();
-        }
-        
-        function deleteUser(username) {
-            if (username === 'admin') {
-                showNotification('❌ No se puede eliminar el usuario administrador principal');
-                return;
-            }
-            
-            if (username === currentUser.username) {
-                showNotification('❌ No puedes eliminar tu propio usuario');
-                return;
-            }
-            
-            if (!confirm(`¿Estás seguro de eliminar el usuario "${username}"?`)) return;
-            
-            let users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)) || [];
-            users = users.filter(u => u.username !== username);
-            localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-            showNotification('✅ Usuario eliminado');
-            updateUsersTable();
-        }
-        
-        function updateUsersTable() {
-            const users = JSON.parse(localStorage.getItem(USERS_STORAGE_KEY)) || [];
-            const tbody = document.getElementById('usersTableBody');
-            
-            const roleLabels = {
-                'admin': '<span class="role-badge admin">👑 Admin</span>',
-                'cocina': '<span class="role-badge cocina">👨‍🍳 Cocina</span>',
-                'servicio': '<span class="role-badge servicio">🍽️ Servicio</span>'
-            };
-            
-            tbody.innerHTML = users.map(user => `
-                <tr>
-                    <td><strong>${user.username}</strong></td>
-                    <td>${roleLabels[user.role]}</td>
-                    <td>
-                        ${user.username !== 'admin' ? `<button class="btn btn-danger btn-small" onclick="deleteUser('${user.username}')">🗑️ Eliminar</button>` : '<em style="color: #9ca3af;">Protegido</em>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        // ==================== CÓDIGO ORIGINAL DEL SISTEMA ====================
-        
-        // ===== SISTEMA DE PERSISTENCIA =====
-        
-        const DB_VERSION = '2.0';
-        const STORAGE_KEYS = {
-            DISHES: 'eta_dishes',
-            ORDERS: 'eta_orders',
-            ACCESS_CODES: 'eta_access_codes',
-            CHAT_MESSAGES: 'eta_chat_messages',
-            SETTINGS: 'eta_settings',
-            VERSION: 'eta_version'
-        };
-        
-        // Cargar datos desde localStorage
-        function loadFromStorage(key, defaultValue = []) {
-            try {
-                const data = localStorage.getItem(key);
-                return data ? JSON.parse(data) : defaultValue;
-            } catch (e) {
-                console.error(`Error al cargar ${key}:`, e);
-                return defaultValue;
-            }
-        }
-        
-        // Guardar datos en localStorage
-        function saveToStorage(key, data) {
-            try {
-                localStorage.setItem(key, JSON.stringify(data));
-                showSaveIndicator();
-                return true;
-            } catch (e) {
-                console.error(`Error al guardar ${key}:`, e);
-                showNotification('⚠️ Error al guardar datos');
-                return false;
-            }
-        }
-        
-        // Indicador visual de guardado
-        function showSaveIndicator() {
-            const indicator = document.getElementById('saveIndicator');
-            indicator.classList.add('show');
-            setTimeout(() => indicator.classList.remove('show'), 2000);
-        }
-        
-        // Paleta de colores para grupos (colores vibrantes y distinguibles)
-        const groupColors = [
-            { primary: '#667eea', bg: '#e0e7ff', dark: '#4c51bf' }, // Púrpura
-            { primary: '#10b981', bg: '#d1fae5', dark: '#059669' }, // Verde
-            { primary: '#f59e0b', bg: '#fef3c7', dark: '#d97706' }, // Amarillo
-            { primary: '#ef4444', bg: '#fee2e2', dark: '#dc2626' }, // Rojo
-            { primary: '#06b6d4', bg: '#cffafe', dark: '#0891b2' }, // Cyan
-            { primary: '#8b5cf6', bg: '#ede9fe', dark: '#7c3aed' }, // Violeta
-            { primary: '#ec4899', bg: '#fce7f3', dark: '#db2777' }, // Rosa
-            { primary: '#14b8a6', bg: '#ccfbf1', dark: '#0d9488' }, // Teal
-            { primary: '#f97316', bg: '#ffedd5', dark: '#ea580c' }, // Naranja
-            { primary: '#6366f1', bg: '#e0e7ff', dark: '#4f46e5' }  // Índigo
-        ];
-        
-        // Asignar color a grupo basado en ID
-        function getGroupColor(orderId) {
-            const index = orderId % groupColors.length;
-            return groupColors[index];
-        }
-        
-        // Generar badge de color para identificación rápida
-        function getColorBadge(orderId, groupName) {
-            const color = getGroupColor(orderId);
-            return `<div style="display: inline-flex; align-items: center; gap: 10px; padding: 8px 15px; background: ${color.bg}; border-radius: 20px; border: 2px solid ${color.primary};">
-                <div style="width: 16px; height: 16px; border-radius: 50%; background: ${color.primary}; box-shadow: 0 0 0 3px ${color.bg};"></div>
-                <span style="font-weight: bold; color: ${color.dark}; font-size: 15px;">${groupName}</span>
-            </div>`;
-        }
-        let dishes = loadFromStorage(STORAGE_KEYS.DISHES, [
-            {id: 1, name: 'Ceviche', category: 'Entradas', price: 8.50, qty: 0, restrictions: ''},
-            {id: 2, name: 'Ensalada César', category: 'Entradas', price: 6.00, qty: 0, restrictions: ''},
-            {id: 3, name: 'Corvina al Horno', category: 'Platos Fuertes', price: 12.50, qty: 0, restrictions: ''},
-            {id: 4, name: 'Lomo Saltado', category: 'Platos Fuertes', price: 11.00, qty: 0, restrictions: ''},
-            {id: 5, name: 'Flan', category: 'Postres', price: 3.50, qty: 0, restrictions: ''}
-        ]);
-        let orders = loadFromStorage(STORAGE_KEYS.ORDERS, []);
-        let chatMessages = loadFromStorage(STORAGE_KEYS.CHAT_MESSAGES, {});
-        let accessCodes = loadFromStorage(STORAGE_KEYS.ACCESS_CODES, {
-            'DEMO001': {
-                guideName: 'Agencia Tours del Pacífico',
-                allowedDishes: [1, 3, 5],
-                createdAt: new Date().toISOString()
-            }
-        });
-        let currentAccessCode = null;
-        let currentGuideOrderId = null;
-        let paxCount = 1; // Valor inicial de PAX
-        
-        // ===== SISTEMA GPS REAL =====
-        
-        let gpsEnabled = false;
-        let currentPosition = null;
-        let watchId = null;
-        let restaurantLocation = loadFromStorage(STORAGE_KEYS.SETTINGS, {
-            lat: -0.1807,  // Quito centro
-            lon: -78.4678
-        });
-        
-        // Verificar soporte GPS
-        function checkGPSSupport() {
-            if ('geolocation' in navigator) {
-                updateGPSStatus('GPS disponible - Clic para activar', 'inactive');
-                return true;
-            } else {
-                updateGPSStatus('GPS no disponible en este dispositivo', 'inactive');
-                return false;
-            }
-        }
-        
-        // Solicitar permiso GPS
-        function requestGPSPermission() {
-            if (!('geolocation' in navigator)) {
-                showNotification('⚠️ GPS no disponible en este dispositivo');
-                return;
-            }
-            
-            updateGPSStatus('Solicitando permiso...', 'inactive');
-            const btn = document.getElementById('btnActivateGPS');
-            if (btn) btn.textContent = 'Activando...';
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    gpsEnabled = true;
-                    currentPosition = position;
-                    startGPSTracking();
-                    updateGPSStatus('GPS activo ✓', 'active');
-                    showNotification('✅ GPS activado correctamente');
-                    updateGPSBadge(true);
-                    if (btn) {
-                        btn.textContent = '✓ GPS Activo';
-                        btn.style.background = '#10b981';
-                        btn.disabled = true;
-                    }
-                },
-                (error) => {
-                    gpsEnabled = false;
-                    let message = 'Error al activar GPS';
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            message = 'Permiso GPS denegado';
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            message = 'Ubicación no disponible';
-                            break;
-                        case error.TIMEOUT:
-                            message = 'Tiempo de espera agotado';
-                            break;
-                    }
-                    updateGPSStatus(message, 'inactive');
-                    showNotification(`⚠️ ${message}`);
-                    updateGPSBadge(false);
-                    if (btn) btn.textContent = 'Reintentar GPS';
-                }
-            );
-        }
-        
-        // Iniciar seguimiento GPS
-        function startGPSTracking() {
+
+        function guideLogout() {
             if (watchId) {
                 navigator.geolocation.clearWatch(watchId);
             }
-            
-            watchId = navigator.geolocation.watchPosition(
-                (position) => {
-                    currentPosition = position;
-                    updateAllGPSDisplays();
-                },
-                (error) => {
-                    console.error('Error GPS:', error);
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 5000
-                }
-            );
+            currentAccessCode = null;
+            document.getElementById('guideView').style.display = 'none';
+            document.getElementById('guideAccessPanel').style.display = 'block';
+            document.getElementById('guideAccessCode').value = '';
+            menu = JSON.parse(JSON.stringify(menuData));
+            showNotification('Sesión cerrada', 'info');
         }
-        
-        // Calcular distancia (fórmula Haversine)
-        function calculateDistance(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Radio de la Tierra en km
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = 
-                Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            return R * c;
-        }
-        
-        // Actualizar estado GPS en UI
-        function updateGPSStatus(text, status) {
-            const indicator = document.getElementById('gpsStatusIndicator');
-            const textEl = document.getElementById('gpsStatusText');
-            if (indicator && textEl) {
-                textEl.textContent = text;
-                indicator.className = `gps-status ${status}`;
-            }
-            
-            const detail = document.getElementById('gpsStatusDetail');
-            if (detail) {
-                if (gpsEnabled && currentPosition) {
-                    detail.innerHTML = `
-                        <div style="color: #10b981; font-weight: 600; margin-bottom: 10px;">✅ GPS Activo</div>
-                        <div style="font-size: 14px; color: #6b7280;">
-                            📍 Lat: ${currentPosition.coords.latitude.toFixed(6)}<br>
-                            📍 Lon: ${currentPosition.coords.longitude.toFixed(6)}<br>
-                            🎯 Precisión: ${currentPosition.coords.accuracy.toFixed(0)}m
-                        </div>
-                    `;
-                } else {
-                    detail.innerHTML = `<div style="color: #ef4444;">❌ GPS Inactivo</div>`;
-                }
-            }
-        }
-        
-        function updateGPSBadge(active) {
-            const badge = document.getElementById('gpsStatusBadge');
-            if (badge) {
-                if (active) {
-                    badge.style.background = '#d1fae5';
-                    badge.style.color = '#065f46';
-                    badge.textContent = '📍 GPS: Activo';
-                } else {
-                    badge.style.background = '#fee2e2';
-                    badge.style.color = '#991b1b';
-                    badge.textContent = '📍 GPS: Inactivo';
-                }
-            }
-        }
-        
-        // Actualizar todas las pantallas con datos GPS
-        function updateAllGPSDisplays() {
-            const gpsInfoEl = document.getElementById('gpsInfo');
-            
-            if (!gpsEnabled || !currentPosition) {
-                if (gpsInfoEl) {
-                    gpsInfoEl.innerHTML = `
-                        <p style="color: #dc2626; font-size: 14px;">
-                            ⚠️ <strong>GPS No Activo</strong><br>
-                            Haz click en "Activar GPS" arriba para usar ubicación real.
-                        </p>
-                    `;
-                }
-                return;
-            }
-            
-            const distance = calculateDistance(
-                currentPosition.coords.latitude,
-                currentPosition.coords.longitude,
-                restaurantLocation.lat,
-                restaurantLocation.lon
-            );
-            
-            const speed = currentPosition.coords.speed || 10; // m/s (asumimos 36km/h si no hay dato)
-            const timeMinutes = Math.round((distance * 1000) / speed / 60);
-            
-            const now = new Date();
-            now.setMinutes(now.getMinutes() + timeMinutes);
-            const eta = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            
-            if (gpsInfoEl) {
-                gpsInfoEl.innerHTML = `
-                    <p style="color: #065f46; font-size: 14px;">
-                        ✅ <strong>GPS Activo - Ubicación Real</strong><br>
-                        📍 Distancia: <strong>${distance.toFixed(2)} km</strong><br>
-                        ⏱️ Tiempo estimado: <strong>${timeMinutes} minutos</strong><br>
-                        🕐 Hora de llegada: <strong>${eta}</strong>
-                    </p>
-                `;
-            }
-            
-            const etaEl = document.getElementById('etaTime');
-            if (etaEl) etaEl.textContent = eta;
-        }
-        
-        // Guardar ubicación del restaurante
-        function saveRestaurantLocation() {
-            const address = document.getElementById('restaurantAddress').value;
-            const lat = parseFloat(document.getElementById('restaurantLat').value);
-            const lon = parseFloat(document.getElementById('restaurantLon').value);
-            
-            if (!lat || !lon) {
-                showNotification('⚠️ Ingresa coordenadas válidas');
-                return;
-            }
-            
-            restaurantLocation = { lat, lon, address };
-            saveToStorage(STORAGE_KEYS.SETTINGS, restaurantLocation);
-            showNotification('✅ Ubicación del restaurante guardada');
-            updateAllGPSDisplays();
-        }
-        
-        // ===== FUNCIONES PRINCIPALES =====
-        
-        function showView(viewName) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(viewName).classList.add('active');
-            if (viewName === 'reception') {
-                updateReception();
-                updateCurrentDishList();
-                updateAccessCodesList();
-            }
-            if (viewName === 'kitchen') updateKitchen();
-            if (viewName === 'service') updateService();
-            if (viewName === 'settings') {
-                checkGPSSupport();
-                updateGPSStatus(gpsEnabled ? 'GPS activo' : 'GPS inactivo', gpsEnabled ? 'active' : 'inactive');
-                
-                // Cargar valores guardados
-                if (restaurantLocation.address) {
-                    document.getElementById('restaurantAddress').value = restaurantLocation.address;
-                }
-                document.getElementById('restaurantLat').value = restaurantLocation.lat;
-                document.getElementById('restaurantLon').value = restaurantLocation.lon;
-            }
-        }
-        
-        function accessGuideMenu() {
-            const code = document.getElementById('guideAccessCode').value.trim().toUpperCase();
-            if (!code) {
-                showNotification('⚠️ Ingresa el código de acceso');
-                return;
-            }
-            
-            if (!accessCodes[code]) {
-                showNotification('❌ Código inválido');
-                return;
-            }
-            
-            currentAccessCode = code;
-            document.getElementById('guideAccessSection').style.display = 'none';
-            document.getElementById('guideOrderSection').style.display = 'block';
-            document.getElementById('currentGuideName').textContent = accessCodes[code].guideName;
-            
-            // Mostrar el código como nombre del grupo
-            document.getElementById('displayGroupCode').textContent = code;
-            document.getElementById('groupName').value = ''; // Limpiar nombre personalizado
-            
+
+        function initializeGuideView() {
+            document.getElementById('paxCount').value = paxCount;
             renderMenu();
-            updateOrderSummary();
-            updateAllGPSDisplays();
-            showNotification('✅ Acceso autorizado');
+            initializeMap();
+            startLocationTracking();
+            showGuideView('menu');
+            loadGuideChat();
         }
-        
-        function toggleCustomName() {
-            const input = document.getElementById('groupName');
-            const btn = document.getElementById('toggleNameBtn');
-            
-            if (input.style.display === 'none') {
-                input.style.display = 'block';
-                input.focus();
-                btn.textContent = '✓ Usar Código';
-                btn.classList.remove('btn-secondary');
-                btn.classList.add('btn-primary');
-            } else {
-                input.style.display = 'none';
-                input.value = '';
-                btn.textContent = '✏️ Personalizar';
+
+        // ==================== VISTAS ====================
+        function showView(view) {
+            document.querySelectorAll('#app .view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.view-toggle .btn-secondary').forEach(btn => {
                 btn.classList.remove('btn-primary');
                 btn.classList.add('btn-secondary');
+            });
+            
+            document.getElementById(`view${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.add('active');
+            document.getElementById(`btn${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.remove('btn-secondary');
+            document.getElementById(`btn${view.charAt(0).toUpperCase() + view.slice(1)}`).classList.add('btn-primary');
+            
+            currentView = view;
+            
+            if (view === 'codes') updateAccessCodesList();
+            else if (view === 'orders') updateOrdersList();
+            else if (view === 'served') updateServedList();
+        }
+
+        function showGuideView(view) {
+            document.querySelectorAll('#guideView .view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('#guideView .view-toggle .btn-secondary').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-secondary');
+            });
+            
+            if (view === 'menu') {
+                document.getElementById('guideMenuView').classList.add('active');
+                document.getElementById('btnGuideMenu').classList.remove('btn-secondary');
+                document.getElementById('btnGuideMenu').classList.add('btn-primary');
+            } else if (view === 'chat') {
+                document.getElementById('guideChatView').classList.add('active');
+                document.getElementById('btnGuideChat').classList.remove('btn-secondary');
+                document.getElementById('btnGuideChat').classList.add('btn-primary');
+                loadGuideChat();
+            }
+            
+            currentGuideView = view;
+        }
+
+        // ==================== CÓDIGOS DE ACCESO ====================
+        function openCreateCodeModal() {
+            document.getElementById('createCodeModal').classList.add('active');
+            document.getElementById('groupName').value = '';
+            document.getElementById('groupPax').value = '20';
+        }
+
+        function closeCreateCodeModal() {
+            document.getElementById('createCodeModal').classList.remove('active');
+        }
+
+        function generateAccessCode() {
+            const groupName = document.getElementById('groupName').value.trim();
+            const pax = parseInt(document.getElementById('groupPax').value);
+
+            if (!groupName) {
+                showNotification('Por favor ingrese el nombre del grupo', 'error');
+                return;
+            }
+
+            // Generar código sin espacios
+            const code = groupName.substring(0, 5).toUpperCase().replace(/\s/g, '') + 
+                        Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+            const codeData = {
+                code: code,
+                groupName: groupName,
+                pax: pax,
+                createdAt: Date.now(),
+                expired: false,
+                availableDishes: menu.map(d => ({ id: d.id, name: d.name }))
+            };
+
+            db.ref('codes').push(codeData).then(() => {
+                closeCreateCodeModal();
+                document.getElementById('generatedCode').textContent = code;
+                document.getElementById('codeGeneratedModal').classList.add('active');
+                updateAccessCodesList();
+                showNotification('✅ Código generado exitosamente', 'success');
+            });
+        }
+
+        function closeCodeGeneratedModal() {
+            document.getElementById('codeGeneratedModal').classList.remove('active');
+        }
+
+        function updateAccessCodesList() {
+            db.ref('codes').once('value', (snapshot) => {
+                const codes = [];
+                snapshot.forEach(child => {
+                    codes.push({ key: child.key, ...child.val() });
+                });
+
+                const list = document.getElementById('accessCodesList');
+                if (codes.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay códigos generados</p>';
+                    return;
+                }
+
+                list.innerHTML = codes.map(code => `
+                    <div class="access-code-item ${code.expired ? 'expired' : ''}">
+                        <div class="code-header">
+                            <div>
+                                <div class="code">${code.code}</div>
+                                <div class="info">👤 ${code.groupName} | 🍽️ ${code.availableDishes.length} platos disponibles</div>
+                            </div>
+                            <button class="btn btn-danger btn-small" onclick="deleteCode('${code.key}')">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function deleteCode(key) {
+            if (confirm('¿Está seguro de eliminar este código?')) {
+                db.ref(`codes/${key}`).remove().then(() => {
+                    showNotification('Código eliminado', 'success');
+                    updateAccessCodesList();
+                });
             }
         }
-        
-        function logoutGuide() {
-            currentAccessCode = null;
-            document.getElementById('guideAccessSection').style.display = 'block';
-            document.getElementById('guideOrderSection').style.display = 'none';
-            document.getElementById('guideAccessCode').value = '';
-            document.getElementById('groupName').value = '';
-            document.getElementById('groupName').style.display = 'none';
-            dishes.forEach(d => { d.qty = 0; d.restrictions = ''; });
-        }
-        
-        function adjustPax(change) {
-            paxCount = Math.max(1, paxCount + change);
+
+        // ==================== MENÚ Y PEDIDOS ====================
+        function updatePax(change) {
+            paxCount = Math.max(1, Math.min(999, paxCount + change));
             document.getElementById('paxCount').value = paxCount;
         }
-        
+
         function updatePaxFromInput() {
             const input = document.getElementById('paxCount');
-            const value = parseInt(input.value) || 1;
-            paxCount = Math.max(1, Math.min(999, value));
-            input.value = paxCount;
+            let value = parseInt(input.value) || 1;
+            value = Math.max(1, Math.min(999, value));
+            paxCount = value;
+            input.value = value;
         }
-        
-        function adjustDish(id, change) {
-            const dish = dishes.find(d => d.id === id);
-            if (dish) {
-                dish.qty = Math.max(0, dish.qty + change);
-                const input = document.getElementById(`dish_qty_${id}`);
-                if (input) input.value = dish.qty;
-                renderMenu();
-                updateOrderSummary();
-                saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            }
-        }
-        
-        function updateDishQtyFromInput(id) {
-            const input = document.getElementById(`dish_qty_${id}`);
-            const dish = dishes.find(d => d.id === id);
-            if (dish && input) {
-                const value = parseInt(input.value) || 0;
-                dish.qty = Math.max(0, Math.min(999, value));
-                input.value = dish.qty;
-                renderMenu();
-                updateOrderSummary();
-                saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            }
-        }
-        
-        function updateRestriction(id, value) {
-            const dish = dishes.find(d => d.id === id);
-            if (dish) {
-                dish.restrictions = value;
-                saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            }
-        }
-        
+
         function renderMenu() {
-            if (!currentAccessCode) return;
-            
-            const container = document.getElementById('menuContainer');
-            const allowedDishIds = accessCodes[currentAccessCode].allowedDishes;
-            const allowedDishes = dishes.filter(d => allowedDishIds.includes(d.id));
-            
-            if (allowedDishes.length === 0) {
-                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No hay platos disponibles en tu menú</p>';
-                return;
-            }
-            
-            const categories = ['Entradas', 'Platos Fuertes', 'Postres', 'Bebidas'];
-            const colors = {'Entradas': '#10b981', 'Platos Fuertes': '#ef4444', 'Postres': '#f59e0b', 'Bebidas': '#06b6d4'};
-            const icons = {'Entradas': '🥗', 'Platos Fuertes': '🍖', 'Postres': '🍰', 'Bebidas': '🥤'};
+            const menuList = document.getElementById('menuList');
+            const categories = [...new Set(menu.map(item => item.category))];
             
             let html = '';
-            categories.forEach(cat => {
-                const catDishes = allowedDishes.filter(d => d.category === cat);
-                if (catDishes.length > 0) {
-                    html += `<div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${colors[cat]};">
-                        <h4 style="color: ${colors[cat]}; margin-bottom: 10px;">${icons[cat]} ${cat.toUpperCase()}</h4>`;
-                    
-                    catDishes.forEach(dish => {
-                        html += `<div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <div><strong>${dish.name}</strong><br><span style="color: #6b7280; font-size: 14px;">$${dish.price.toFixed(2)}</span></div>
-                                <div style="display: flex; align-items: center; gap: 10px;">
-                                    <button class="btn btn-secondary btn-small" onclick="adjustDish(${dish.id}, -1)">−</button>
-                                    <input type="number" id="dish_qty_${dish.id}" value="${dish.qty}" min="0" max="999"
-                                        style="width: 60px; text-align: center; font-size: 18px; font-weight: bold; color: #667eea; border: 2px solid #e0e7ff; border-radius: 6px; padding: 5px;"
-                                        onchange="updateDishQtyFromInput(${dish.id})" />
-                                    <button class="btn btn-primary btn-small" onclick="adjustDish(${dish.id}, 1)">+</button>
-                                </div>
+            categories.forEach(category => {
+                const items = menu.filter(item => item.category === category);
+                items.forEach(dish => {
+                    html += `
+                        <div class="menu-item ${dish.qty > 0 ? 'selected' : ''}" id="dish-${dish.id}">
+                            <h4>${dish.name}</h4>
+                            <p>${dish.description}</p>
+                            <div class="quantity-control">
+                                <button onclick="updateDishQty(${dish.id}, -1)">-</button>
+                                <input type="number" 
+                                       id="qty-${dish.id}" 
+                                       value="${dish.qty}" 
+                                       min="0" 
+                                       max="999"
+                                       onchange="updateDishQtyFromInput(${dish.id})">
+                                <button onclick="updateDishQty(${dish.id}, 1)">+</button>
                             </div>
-                            ${dish.qty > 0 ? `<input type="text" placeholder="Restricciones (ej: 2 sin cebolla)" value="${dish.restrictions}"
-                                onchange="updateRestriction(${dish.id}, this.value)"
-                                style="width: 100%; padding: 10px; border: 2px solid #fef3c7; border-radius: 6px; font-size: 13px; background: #fffbeb;">` : ''}
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
-            });
-            container.innerHTML = html;
-        }
-        
-        function updateOrderSummary() {
-            const total = dishes.reduce((sum, d) => sum + (d.price * d.qty), 0);
-            const totalDishes = dishes.reduce((sum, d) => sum + d.qty, 0);
-            
-            document.getElementById('orderSummary').innerHTML = `
-                <div style="display: flex; justify-content: space-between; font-size: 18px; margin-bottom: 10px;">
-                    <span>Total de platos:</span><strong style="color: #667eea;">${totalDishes}</strong>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold;">
-                    <span>Total a pagar:</span><strong style="color: #10b981;">${total.toFixed(2)}</strong>
-                </div>`;
-        }
-        
-        function sendOrder() {
-            // Validación 1: Código de acceso
-            if (!currentAccessCode) {
-                showNotification('⚠️ Error: Debes ingresar con un código de acceso primero');
-                return;
-            }
-            
-            // Validación 2: PAX debe ser mayor a 0
-            if (!paxCount || paxCount <= 0) {
-                showNotification('⚠️ Error: Debes indicar el número de pasajeros (PAX)');
-                document.getElementById('paxCount').style.border = '2px solid #ef4444';
-                setTimeout(() => {
-                    document.getElementById('paxCount').style.border = '';
-                }, 2000);
-                return;
-            }
-            
-            // Validación 3: Al menos un plato seleccionado
-            const totalDishes = dishes.reduce((sum, d) => sum + d.qty, 0);
-            if (totalDishes === 0) { 
-                showNotification('⚠️ Error: Debes seleccionar al menos un plato del menú'); 
-                return; 
-            }
-            
-            // Usar código como nombre, o nombre personalizado si está lleno
-            const customName = document.getElementById('groupName').value.trim();
-            const groupName = customName || currentAccessCode;
-            
-            // Si GPS está activo, calcular distancia y ETA real
-            let distance = 2.5; // valor por defecto
-            let eta = '14:30'; // valor por defecto
-            
-            if (gpsEnabled && currentPosition) {
-                distance = calculateDistance(
-                    currentPosition.coords.latitude,
-                    currentPosition.coords.longitude,
-                    restaurantLocation.lat,
-                    restaurantLocation.lon
-                );
-                
-                const speed = currentPosition.coords.speed || 10;
-                const timeMinutes = Math.round((distance * 1000) / speed / 60);
-                const now = new Date();
-                now.setMinutes(now.getMinutes() + timeMinutes);
-                eta = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            }
-            
-            // Verificar si ya existe un pedido activo (no servido) para este código
-            let existingOrder = orders.find(o => o.accessCode === currentAccessCode && !o.served);
-            
-            if (existingOrder) {
-                // Actualizar pedido existente en lugar de crear duplicado
-                existingOrder.pax = paxCount;
-                existingOrder.dishes = dishes.filter(d => d.qty > 0).map(d => ({...d}));
-                existingOrder.modified = true;
-                existingOrder.modifiedAt = new Date().toISOString();
-                existingOrder.groupName = customName || currentAccessCode;
-                
-                // Recalcular ETA si GPS activo
-                if (gpsEnabled && currentPosition) {
-                    existingOrder.distance = calculateDistance(
-                        currentPosition.coords.latitude,
-                        currentPosition.coords.longitude,
-                        restaurantLocation.lat,
-                        restaurantLocation.lon
-                    );
-                    const speed = currentPosition.coords.speed || 10;
-                    const timeMinutes = Math.round((existingOrder.distance * 1000) / speed / 60);
-                    const now = new Date();
-                    now.setMinutes(now.getMinutes() + timeMinutes);
-                    existingOrder.eta = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                } else {
-                    existingOrder.eta = eta;
-                    existingOrder.distance = distance;
-                }
-                
-                currentGuideOrderId = existingOrder.id;
-                saveToStorage(STORAGE_KEYS.ORDERS, orders);
-                addChatMessage(existingOrder.id, 'guide', `🔄 Pedido actualizado - ${paxCount} PAX - ETA: ${existingOrder.eta}`);
-                showNotification('✅ Pedido actualizado exitosamente!');
-            } else {
-                // Crear nuevo pedido
-                const orderId = Date.now();
-                orders.push({
-                    id: orderId,
-                    groupName,
-                    accessCode: currentAccessCode,
-                    guideName: accessCodes[currentAccessCode].guideName,
-                    pax: paxCount,
-                    dishes: dishes.filter(d => d.qty > 0).map(d => ({...d})),
-                    eta,
-                    distance,
-                    timestamp: new Date().toISOString(),
-                    gpsEnabled
+                        </div>
+                    `;
                 });
-                
-                saveToStorage(STORAGE_KEYS.ORDERS, orders);
-                chatMessages[orderId] = [];
-                currentGuideOrderId = orderId;
-                addChatMessage(orderId, 'guide', `📍 Grupo "${groupName}" en camino. ${paxCount} PAX. ETA: ${eta}`);
-                showNotification('✅ Pedido enviado exitosamente!');
-            }
-            
-            // Mostrar botón modificar, ocultar botón enviar
-            document.getElementById('btnSendOrder').style.display = 'none';
-            document.getElementById('btnModifyOrder').style.display = 'block';
-            
-            // Limpiar cantidades (pero guardar qué platos había)
-            dishes.forEach(d => { d.qty = 0; d.restrictions = ''; });
-            saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            renderMenu();
-            updateOrderSummary();
-            updateGuideChatDisplay();
-        }
-        
-        // ==================== MODIFICAR PEDIDO ====================
-        
-        function enableOrderModification() {
-            if (!currentGuideOrderId) {
-                showNotification('⚠️ No hay pedido activo para modificar');
-                return;
-            }
-            
-            const order = orders.find(o => o.id === currentGuideOrderId);
-            if (!order) {
-                showNotification('⚠️ No se encontró el pedido');
-                return;
-            }
-            
-            if (order.served) {
-                showNotification('⚠️ Este pedido ya fue servido. No se puede modificar.');
-                return;
-            }
-            
-            // Cargar los datos del pedido actual al menú
-            order.dishes.forEach(orderDish => {
-                const dish = dishes.find(d => d.id === orderDish.id);
-                if (dish) {
-                    dish.qty = orderDish.qty;
-                    dish.restrictions = orderDish.restrictions || '';
-                }
             });
             
-            // Actualizar PAX
-            paxCount = order.pax;
-            document.getElementById('paxCount').value = paxCount;
-            
-            renderMenu();
-            updateOrderSummary();
-            
-            // Cambiar botón a "Guardar Cambios"
-            document.getElementById('btnModifyOrder').style.display = 'none';
-            const btnSend = document.getElementById('btnSendOrder');
-            btnSend.textContent = '💾 Guardar Cambios del Pedido';
-            btnSend.style.display = 'block';
-            btnSend.onclick = saveOrderModifications;
-            
-            showNotification('📝 Puedes modificar tu pedido ahora');
+            menuList.innerHTML = html;
         }
-        
-        function saveOrderModifications() {
-            if (!currentGuideOrderId) return;
-            
-            const order = orders.find(o => o.id === currentGuideOrderId);
-            if (!order) return;
-            
-            // Validar que hay al menos un plato
-            const totalDishes = dishes.reduce((sum, d) => sum + d.qty, 0);
-            if (totalDishes === 0) {
-                showNotification('⚠️ Error: Debes tener al menos un plato');
-                return;
-            }
-            
-            // Actualizar el pedido
-            order.pax = paxCount;
-            order.dishes = dishes.filter(d => d.qty > 0).map(d => ({...d}));
-            order.modified = true;
-            order.modifiedAt = new Date().toISOString();
-            
-            // Recalcular ETA si GPS activo
-            if (gpsEnabled && currentPosition) {
-                const distance = calculateDistance(
-                    currentPosition.coords.latitude,
-                    currentPosition.coords.longitude,
-                    restaurantLocation.lat,
-                    restaurantLocation.lon
-                );
-                order.distance = distance;
-                
-                const speed = currentPosition.coords.speed || 10;
-                const timeMinutes = Math.round((distance * 1000) / speed / 60);
-                const now = new Date();
-                now.setMinutes(now.getMinutes() + timeMinutes);
-                order.eta = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            }
-            
-            saveToStorage(STORAGE_KEYS.ORDERS, orders);
-            
-            // Notificar al restaurante
-            addChatMessage(currentGuideOrderId, 'guide', `🔄 PEDIDO MODIFICADO - ${paxCount} PAX - Revisa los cambios`);
-            
-            showNotification('✅ Cambios guardados exitosamente!');
-            
-            // Volver a modo "modificar"
-            dishes.forEach(d => { d.qty = 0; d.restrictions = ''; });
-            saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            renderMenu();
-            updateOrderSummary();
-            
-            const btnSend = document.getElementById('btnSendOrder');
-            btnSend.textContent = '📤 Enviar Pedido al Restaurante';
-            btnSend.style.display = 'none';
-            btnSend.onclick = sendOrder;
-            document.getElementById('btnModifyOrder').style.display = 'block';
-            
-            // Actualizar vistas
-            updateReception();
-            updateKitchen();
-            updateService();
+
+        function updateDishQty(dishId, change) {
+            const dish = menu.find(d => d.id === dishId);
+            dish.qty = Math.max(0, Math.min(999, dish.qty + change));
+            document.getElementById(`qty-${dishId}`).value = dish.qty;
+            document.getElementById(`dish-${dishId}`).classList.toggle('selected', dish.qty > 0);
         }
-        
-        // ==================== FIN MODIFICAR PEDIDO ====================
-        
-        function toggleDishForm() {
-            const form = document.getElementById('dishFormReception');
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-            } else {
-                form.style.display = 'none';
-                document.getElementById('newDishName').value = '';
-                document.getElementById('newDishPrice').value = '';
-            }
+
+        function updateDishQtyFromInput(dishId) {
+            const input = document.getElementById(`qty-${dishId}`);
+            let value = parseInt(input.value) || 0;
+            value = Math.max(0, Math.min(999, value));
+            
+            const dish = menu.find(d => d.id === dishId);
+            dish.qty = value;
+            input.value = value;
+            document.getElementById(`dish-${dishId}`).classList.toggle('selected', value > 0);
         }
-        
-        function saveDish() {
-            const name = document.getElementById('newDishName').value.trim();
-            const price = parseFloat(document.getElementById('newDishPrice').value);
-            const category = document.getElementById('newDishCategory').value;
-            
-            if (!name || !price || price <= 0) {
-                showNotification('⚠️ Completa todos los campos correctamente');
-                return;
-            }
-            
-            const newId = Math.max(...dishes.map(d => d.id), 0) + 1;
-            dishes.push({
-                id: newId,
-                name,
-                category,
-                price,
-                qty: 0,
-                restrictions: ''
-            });
-            
-            saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            showNotification('✅ Plato agregado');
-            toggleDishForm();
-            updateCurrentDishList();
-            renderMenu();
-        }
-        
-        function deleteDish(id) {
-            if (!confirm('¿Eliminar este plato?')) return;
-            dishes = dishes.filter(d => d.id !== id);
-            saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            showNotification('✅ Plato eliminado');
-            updateCurrentDishList();
-            renderMenu();
-        }
-        
-        function updateCurrentDishList() {
-            const container = document.getElementById('currentDishes');
-            if (dishes.length === 0) {
-                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No hay platos</p>';
-                return;
-            }
-            
-            const icons = {'Entradas': '🥗', 'Platos Fuertes': '🍖', 'Postres': '🍰', 'Bebidas': '🥤'};
-            const categories = ['Entradas', 'Platos Fuertes', 'Postres', 'Bebidas'];
-            
-            let html = '<div style="background: white; padding: 15px; border-radius: 8px;">';
-            html += '<h4 style="margin-bottom: 15px;">Menú Completo</h4>';
-            
-            categories.forEach(cat => {
-                const catDishes = dishes.filter(d => d.category === cat);
-                if (catDishes.length > 0) {
-                    html += `<div style="margin-bottom: 15px;">
-                        <h5 style="color: #667eea; margin-bottom: 10px;">${icons[cat]} ${cat}</h5>`;
-                    catDishes.forEach(dish => {
-                        html += `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px;">
-                            <div><strong>${dish.name}</strong><br><span style="color: #10b981; font-weight: bold;">${dish.price.toFixed(2)}</span></div>
-                            <button class="btn btn-danger btn-small" onclick="deleteDish(${dish.id})">🗑️</button>
-                        </div>`;
-                    });
-                    html += '</div>';
-                }
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function showCreateAccessCodeModal() {
-            document.getElementById('accessCodeModal').classList.add('open');
-            renderModalDishList();
-        }
-        
-        function closeAccessCodeModal() {
-            document.getElementById('accessCodeModal').classList.remove('open');
-            document.getElementById('modalAccessCode').value = '';
-            document.getElementById('modalGuideName').value = '';
-            
-            // Limpiar todos los checkboxes
-            dishes.forEach(dish => {
-                const checkbox = document.getElementById(`dish_${dish.id}`);
-                if (checkbox) checkbox.checked = false;
-            });
-        }
-        
-        function renderModalDishList() {
-            const container = document.getElementById('modalDishList');
-            if (dishes.length === 0) {
-                container.innerHTML = '<p style="color: #6b7280;">Primero agrega platos al menú</p>';
-                return;
-            }
-            
-            const icons = {'Entradas': '🥗', 'Platos Fuertes': '🍖', 'Postres': '🍰', 'Bebidas': '🥤'};
-            let html = '<div style="max-height: 300px; overflow-y: auto;">';
-            
-            dishes.forEach(dish => {
-                html += `<div class="dish-checkbox">
-                    <input type="checkbox" id="dish_${dish.id}" value="${dish.id}">
-                    <label for="dish_${dish.id}" style="flex: 1; cursor: pointer;">
-                        ${icons[dish.category]} <strong>${dish.name}</strong> - ${dish.price.toFixed(2)}
-                        <br><small style="color: #6b7280;">${dish.category}</small>
-                    </label>
-                </div>`;
-            });
-            html += '</div>';
-            container.innerHTML = html;
-        }
-        
-        function selectAllDishes() {
-            dishes.forEach(dish => {
-                const checkbox = document.getElementById(`dish_${dish.id}`);
-                if (checkbox) checkbox.checked = true;
-            });
-        }
-        
-        function deselectAllDishes() {
-            dishes.forEach(dish => {
-                const checkbox = document.getElementById(`dish_${dish.id}`);
-                if (checkbox) checkbox.checked = false;
-            });
-        }
-        
-        function saveAccessCode() {
-            const codeInput = document.getElementById('modalAccessCode');
-            const nameInput = document.getElementById('modalGuideName');
-            const code = codeInput.value.trim().toUpperCase();
-            const guideName = nameInput.value.trim();
-            
-            // Validación 1: Campos requeridos
-            if (!code) {
-                showNotification('⚠️ Error: El código de acceso es requerido');
-                codeInput.style.border = '2px solid #ef4444';
-                codeInput.focus();
-                setTimeout(() => { codeInput.style.border = ''; }, 2000);
-                return;
-            }
-            
-            if (!guideName) {
-                showNotification('⚠️ Error: El nombre del guía/grupo es requerido');
-                nameInput.style.border = '2px solid #ef4444';
-                nameInput.focus();
-                setTimeout(() => { nameInput.style.border = ''; }, 2000);
-                return;
-            }
-            
-            // Validación 2: Código duplicado
-            if (accessCodes[code]) {
-                showNotification('⚠️ Error: Este código ya existe. Usa otro código.');
-                codeInput.style.border = '2px solid #ef4444';
-                setTimeout(() => { codeInput.style.border = ''; }, 2000);
-                return;
-            }
-            
-            // Validación 3: Al menos un plato seleccionado
-            const selectedDishes = [];
-            dishes.forEach(dish => {
-                const checkbox = document.getElementById(`dish_${dish.id}`);
-                if (checkbox && checkbox.checked) {
-                    selectedDishes.push(dish.id);
-                }
-            });
+
+        function sendOrder() {
+            const selectedDishes = menu.filter(d => d.qty > 0);
             
             if (selectedDishes.length === 0) {
-                showNotification('⚠️ Error: Debes seleccionar al menos un plato del menú');
+                showNotification('Por favor seleccione al menos un plato', 'error');
                 return;
             }
-            
-            accessCodes[code] = {
-                guideName,
-                allowedDishes: selectedDishes,
-                createdAt: new Date().toISOString()
-            };
-            
-            saveToStorage(STORAGE_KEYS.ACCESS_CODES, accessCodes);
-            
-            // Cerrar modal ANTES de mostrar notificación
-            closeAccessCodeModal();
-            updateAccessCodesList();
-            
-            // Notificación después
-            showNotification(`✅ Código "${code}" creado exitosamente`);
-        }
-        
-        function updateAccessCodesList() {
-            const container = document.getElementById('accessCodesList');
-            const codes = Object.keys(accessCodes);
-            
-            if (codes.length === 0) {
-                container.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No hay códigos creados</p>';
+
+            if (!userLocation) {
+                showNotification('Esperando ubicación GPS...', 'info');
                 return;
             }
+
+            const eta = calculateETA(userLocation);
             
-            let html = '';
-            codes.forEach(code => {
-                const data = accessCodes[code];
-                const dishCount = data.allowedDishes.length;
-                html += `<div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #667eea;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #667eea; font-size: 18px;">${code}</strong><br>
-                            <span style="color: #6b7280;">👤 ${data.guideName}</span><br>
-                            <span style="color: #6b7280; font-size: 14px;">🍽️ ${dishCount} platos disponibles</span>
-                        </div>
-                        <button class="btn btn-danger btn-small" onclick="deleteAccessCode('${code}')">🗑️ Eliminar</button>
-                    </div>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-        
-        function deleteAccessCode(code) {
-            if (!confirm(`¿Eliminar código "${code}"?`)) return;
-            delete accessCodes[code];
-            saveToStorage(STORAGE_KEYS.ACCESS_CODES, accessCodes);
-            showNotification('✅ Código eliminado');
-            updateAccessCodesList();
-        }
-        
-        function updateReception() {
-            const activeOrders = getActiveOrders();
-            const servedOrders = getServedOrders();
-            
-            document.getElementById('totalGroups').textContent = activeOrders.length;
-            document.getElementById('totalPax').textContent = activeOrders.reduce((s, o) => s + o.pax, 0);
-            
-            const container = document.getElementById('receptionContainer');
-            
-            if (activeOrders.length === 0 && servedOrders.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No hay pedidos</div>';
-                return;
-            }
-            
-            let html = '';
-            
-            // Mostrar estadísticas si hay servidos
-            if (servedOrders.length > 0) {
-                html += `<div style="background: #d1fae5; padding: 15px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #10b981;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <strong style="color: #065f46;">✅ Servidos Hoy:</strong>
-                            <span style="color: #065f46; font-size: 24px; font-weight: bold; margin-left: 10px;">${servedOrders.length}</span>
-                            <span style="color: #059669; margin-left: 15px;">Total PAX: ${servedOrders.reduce((s, o) => s + o.pax, 0)}</span>
-                        </div>
-                        <button class="btn btn-secondary btn-small" onclick="toggleServedOrders()">
-                            <span id="toggleServedBtn">Ver Servidos</span>
-                        </button>
-                    </div>
-                </div>`;
-            }
-            
-            html += '<div id="activeOrdersSection">';
-            
-            if (activeOrders.length === 0) {
-                html += '<div style="text-align: center; padding: 40px; color: #6b7280;">No hay pedidos activos</div>';
-            } else {
-                activeOrders.forEach((order, index) => {
-                    const color = getGroupColor(order.id);
+            // Verificar si ya existe un pedido para este código
+            db.ref('orders').orderByChild('accessCode').equalTo(currentAccessCode).once('value', (snapshot) => {
+                let existingOrder = null;
+                snapshot.forEach(child => {
+                    const order = child.val();
+                    if (!order.served) {
+                        existingOrder = { key: child.key, ...order };
+                    }
+                });
+
+                if (existingOrder) {
+                    // Actualizar pedido existente
+                    const updates = {
+                        pax: paxCount,
+                        dishes: selectedDishes.map(d => ({ id: d.id, name: d.name, qty: d.qty })),
+                        eta: eta,
+                        location: userLocation,
+                        modifiedAt: Date.now(),
+                        modified: true
+                    };
                     
-                    const dishesHtml = order.dishes.map(d => `
-                        <div style="padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <span>${d.name}</span>
-                                <span style="font-weight: bold; color: ${color.primary};">${d.qty}x</span>
+                    db.ref(`orders/${existingOrder.key}`).update(updates).then(() => {
+                        showNotification('✅ Pedido actualizado correctamente', 'success');
+                    });
+                } else {
+                    // Crear nuevo pedido
+                    const orderData = {
+                        orderId: 'ORD-' + Date.now(),
+                        accessCode: currentAccessCode,
+                        pax: paxCount,
+                        dishes: selectedDishes.map(d => ({ id: d.id, name: d.name, qty: d.qty })),
+                        eta: eta,
+                        location: userLocation,
+                        createdAt: Date.now(),
+                        served: false,
+                        chat: []
+                    };
+
+                    db.ref('orders').push(orderData).then(() => {
+                        showNotification('✅ Pedido enviado correctamente', 'success');
+                    });
+                }
+            });
+        }
+
+        // ==================== GPS Y MAPA ====================
+        function initializeMap() {
+            setTimeout(() => {
+                const mapDiv = document.getElementById('map');
+                mapDiv.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #667eea; font-size: 18px;">📍 Esperando ubicación GPS...</div>';
+            }, 100);
+        }
+
+        function startLocationTracking() {
+            if (navigator.geolocation) {
+                watchId = navigator.geolocation.watchPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        updateMap();
+                        updateETA();
+                    },
+                    (error) => {
+                        console.error('Error GPS:', error);
+                        showNotification('Error al obtener ubicación GPS', 'error');
+                    },
+                    { enableHighAccuracy: true, maximumAge: 10000, timeout: 5000 }
+                );
+            }
+        }
+
+        function updateMap() {
+            const mapDiv = document.getElementById('map');
+            mapDiv.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">📍</div>
+                    <div style="font-size: 18px; font-weight: bold;">Ubicación GPS Activa</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Lat: ${userLocation.lat.toFixed(6)}, Lng: ${userLocation.lng.toFixed(6)}</div>
+                </div>
+            `;
+        }
+
+        function calculateETA(location) {
+            const R = 6371;
+            const dLat = (RESTAURANT_LOCATION.lat - location.lat) * Math.PI / 180;
+            const dLng = (RESTAURANT_LOCATION.lng - location.lng) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                     Math.cos(location.lat * Math.PI / 180) * Math.cos(RESTAURANT_LOCATION.lat * Math.PI / 180) *
+                     Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c;
+            const avgSpeed = 40;
+            const timeInHours = distance / avgSpeed;
+            const timeInMinutes = Math.round(timeInHours * 60);
+            
+            return {
+                distance: distance.toFixed(2),
+                time: timeInMinutes
+            };
+        }
+
+        function updateETA() {
+            if (userLocation) {
+                const eta = calculateETA(userLocation);
+                document.getElementById('etaDisplay').style.display = 'block';
+                document.getElementById('etaTime').textContent = `${eta.time} min`;
+                document.getElementById('etaDistance').textContent = `📍 Distancia: ${eta.distance} km`;
+            }
+        }
+
+        // ==================== GESTIÓN DE PEDIDOS (RESTAURANTE) ====================
+        function updateOrdersList() {
+            db.ref('orders').orderByChild('served').equalTo(false).once('value', (snapshot) => {
+                const orders = [];
+                snapshot.forEach(child => {
+                    orders.push({ key: child.key, ...child.val() });
+                });
+
+                const list = document.getElementById('ordersList');
+                if (orders.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay pedidos pendientes</p>';
+                    return;
+                }
+
+                list.innerHTML = orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h4>🎫 Pedido: ${order.orderId}</h4>
+                                <p>👥 PAX: ${order.pax} personas</p>
+                                <p>⏱️ ETA: ${order.eta.time} minutos (${order.eta.distance} km)</p>
+                                <p>🕐 ${new Date(order.createdAt).toLocaleString()}</p>
                             </div>
-                            ${d.restrictions ? `<div class="restriction-badge">⚠️ ${d.restrictions}</div>` : ''}
+                            <div class="order-actions">
+                                <button class="btn btn-info btn-small" onclick="openChat('${order.key}', '${order.accessCode}')">💬 Chat</button>
+                                <button class="btn btn-success btn-small" onclick="markAsServed('${order.key}', '${order.accessCode}')">✅ Marcar Servido</button>
+                            </div>
+                        </div>
+                        <div class="order-items">
+                            <h5>📋 Platos Solicitados:</h5>
+                            ${order.dishes.map(d => `
+                                <div class="order-item">
+                                    <span>${d.name}</span>
+                                    <span style="font-weight: bold; color: #667eea;">${d.qty}x</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function markAsServed(orderKey, accessCode) {
+            if (confirm('¿Marcar este pedido como servido?')) {
+                // Marcar pedido como servido
+                db.ref(`orders/${orderKey}`).update({ 
+                    served: true, 
+                    servedAt: Date.now() 
+                }).then(() => {
+                    // Expirar el código de acceso
+                    db.ref('codes').orderByChild('code').equalTo(accessCode).once('value', (snapshot) => {
+                        snapshot.forEach(child => {
+                            db.ref(`codes/${child.key}`).update({
+                                expired: true,
+                                expiredAt: Date.now()
+                            });
+                        });
+                    });
+                    
+                    showNotification('✅ Pedido marcado como servido', 'success');
+                    updateOrdersList();
+                    updateServedList();
+                });
+            }
+        }
+
+        function updateServedList() {
+            db.ref('orders').orderByChild('served').equalTo(true).once('value', (snapshot) => {
+                const orders = [];
+                snapshot.forEach(child => {
+                    orders.push({ key: child.key, ...child.val() });
+                });
+
+                const list = document.getElementById('servedList');
+                if (orders.length === 0) {
+                    list.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay pedidos servidos</p>';
+                    return;
+                }
+
+                list.innerHTML = orders.sort((a, b) => b.servedAt - a.servedAt).map(order => `
+                    <div class="order-card served">
+                        <div class="order-header">
+                            <div class="order-info">
+                                <h4>✅ Pedido: ${order.orderId}</h4>
+                                <p>👥 PAX: ${order.pax} personas</p>
+                                <p>🕐 Servido: ${new Date(order.servedAt).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <div class="order-items" style="background: #f0fdf4;">
+                            <h5>📋 Platos Servidos:</h5>
+                            ${order.dishes.map(d => `
+                                <div class="order-item">
+                                    <span>• ${d.qty}x ${d.name}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // ==================== CHAT ====================
+        function openChat(orderKey, accessCode) {
+            currentOrderId = orderKey;
+            document.getElementById('chatModal').classList.add('active');
+            loadChat(orderKey);
+        }
+
+        function closeChatModal() {
+            document.getElementById('chatModal').classList.remove('active');
+            currentOrderId = null;
+        }
+
+        function loadChat(orderKey) {
+            db.ref(`orders/${orderKey}/chat`).on('value', (snapshot) => {
+                const messages = snapshot.val() || [];
+                const chatDiv = document.getElementById('chatMessages');
+                
+                if (messages.length === 0) {
+                    chatDiv.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay mensajes</p>';
+                    return;
+                }
+
+                chatDiv.innerHTML = messages.map(msg => `
+                    <div class="chat-message">
+                        <div class="sender">${msg.sender}</div>
+                        <div class="text">${msg.message}</div>
+                        <div class="time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
+                    </div>
+                `).join('');
+                
+                chatDiv.scrollTop = chatDiv.scrollHeight;
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+
+            db.ref(`orders/${currentOrderId}/chat`).once('value', (snapshot) => {
+                const messages = snapshot.val() || [];
+                messages.push({
+                    sender: currentUser.name,
+                    message: message,
+                    timestamp: Date.now()
+                });
+                
+                db.ref(`orders/${currentOrderId}/chat`).set(messages).then(() => {
+                    input.value = '';
+                });
+            });
+        }
+
+        function loadGuideChat() {
+            db.ref('orders').orderByChild('accessCode').equalTo(currentAccessCode).once('value', (snapshot) => {
+                let orderKey = null;
+                snapshot.forEach(child => {
+                    if (!child.val().served) {
+                        orderKey = child.key;
+                    }
+                });
+
+                if (!orderKey) {
+                    document.getElementById('guideChatMessages').innerHTML = '<p style="text-align: center; color: #9ca3af;">Primero debe enviar un pedido</p>';
+                    return;
+                }
+
+                db.ref(`orders/${orderKey}/chat`).on('value', (snapshot) => {
+                    const messages = snapshot.val() || [];
+                    const chatDiv = document.getElementById('guideChatMessages');
+                    
+                    if (messages.length === 0) {
+                        chatDiv.innerHTML = '<p style="text-align: center; color: #9ca3af;">No hay mensajes</p>';
+                        return;
+                    }
+
+                    chatDiv.innerHTML = messages.map(msg => `
+                        <div class="chat-message">
+                            <div class="sender">${msg.sender}</div>
+                            <div class="text">${msg.message}</div>
+                            <div class="time">${new Date(msg.timestamp).toLocaleTimeString()}</div>
                         </div>
                     `).join('');
                     
-                    const gpsStatus = order.gpsEnabled ? 
-                        `<span style="color: #10b981;">📍 GPS Activo</span>` : 
-                        `<span style="color: #ef4444;">📍 GPS Simulado</span>`;
-                    
-                    html += `<div class="group-card" style="border-left: 5px solid ${color.primary}; background: linear-gradient(to right, ${color.bg} 0%, white 15%);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                            ${getColorBadge(order.id, order.groupName)}
-                            <button class="btn btn-primary btn-small" onclick="openChatWindow(${order.id}, ${100 + index * 30}, ${100 + index * 30})" style="background: ${color.primary};">
-                                💬 Chat
-                            </button>
-                        </div>
-                        <div style="background: #f3f4f6; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-                            <small style="color: #6b7280;">👤 ${order.guideName} | ${gpsStatus}</small>
-                        </div>
-                        <div style="background: ${color.bg}; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px solid ${color.primary};">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                <span><span class="gps-indicator"></span>Distancia</span>
-                                <span class="distance-badge ${order.distance < 1 ? 'near' : ''}" style="background: ${color.primary};">${order.distance.toFixed(1)} km</span>
-                            </div>
-                        </div>
-                        <div style="background: ${color.bg}; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid ${color.primary};">
-                            <div style="font-size: 36px; font-weight: bold; color: ${color.primary}; text-align: center;">${order.eta}</div>
-                        </div>
-                        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                            <div style="flex: 1; background: ${color.bg}; padding: 15px; border-radius: 8px; border: 2px solid ${color.primary};">
-                                <div style="font-size: 14px; color: #6b7280;">PAX</div>
-                                <div style="font-size: 28px; font-weight: bold; color: ${color.primary};">${order.pax}</div>
-                            </div>
-                        </div>
-                        <div style="background: #f0f9ff; padding: 15px; border-radius: 8px;">
-                            <h4 style="color: ${color.dark}; margin-bottom: 10px;">🍽️ Platos</h4>
-                            ${dishesHtml}
-                        </div>
-                        <button class="btn btn-success" onclick="markAsServed(${order.id})" style="width: 100%; margin-top: 15px; padding: 12px; font-size: 14px;">
-                            ✓ Marcar como Servido
-                        </button>
-                    </div>`;
+                    chatDiv.scrollTop = chatDiv.scrollHeight;
                 });
-            }
-            
-            html += '</div>'; // Cierre activeOrdersSection
-            
-            // Sección de servidos (oculta por defecto)
-            html += '<div id="servedOrdersSection" style="display: none;">';
-            if (servedOrders.length > 0) {
-                html += '<h3 style="margin: 20px 0; color: #065f46;">✅ Pedidos Servidos Hoy</h3>';
-                servedOrders.forEach(order => {
-                    const color = getGroupColor(order.id);
-                    const servedTime = new Date(order.servedAt).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
-                    
-                    // Generar resumen de platos
-                    let dishSummary = '';
-                    if (order.dishes && order.dishes.length > 0) {
-                        dishSummary = '<div style="margin-top: 10px; padding: 10px; background: #f0fdf4; border-radius: 6px;">';
-                        dishSummary += '<strong style="color: #065f46;">🍽️ Platos servidos:</strong><br>';
-                        order.dishes.forEach(dish => {
-                            dishSummary += `<span style="color: #6b7280; font-size: 14px;">• ${dish.qty}x ${dish.name}</span><br>`;
-                        });
-                        dishSummary += '</div>';
-                    }
-                    
-                    html += `<div class="group-card" style="border-left: 5px solid #10b981; opacity: 0.8;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            ${getColorBadge(order.id, order.groupName)}
-                            <span style="color: #10b981; font-weight: bold;">✓ Servido ${servedTime}</span>
-                        </div>
-                        <div style="margin-top: 10px; color: #6b7280;">
-                            👤 ${order.guideName} | 👥 ${order.pax} PAX
-                        </div>
-                        ${dishSummary}
-                    </div>`;
-                });
-            }
-            html += '</div>';
-            
-            container.innerHTML = html;
+            });
         }
-        
-        function toggleServedOrders() {
-            const activeSection = document.getElementById('activeOrdersSection');
-            const servedSection = document.getElementById('servedOrdersSection');
-            const btnText = document.getElementById('toggleServedBtn');
-            
-            if (servedSection.style.display === 'none') {
-                activeSection.style.display = 'none';
-                servedSection.style.display = 'block';
-                btnText.textContent = 'Ver Activos';
-            } else {
-                activeSection.style.display = 'block';
-                servedSection.style.display = 'none';
-                btnText.textContent = 'Ver Servidos';
-            }
-        }
-        
-        // Chat windows (reusing original functions with persistence)
-        function openChatWindow(orderId, top, left) {
-            if (!document.getElementById(`chat_${orderId}`)) {
-                const order = orders.find(o => o.id === orderId);
-                const color = getGroupColor(orderId);
-                const chatWindow = document.createElement('div');
-                chatWindow.id = `chat_${orderId}`;
-                chatWindow.className = 'chat-window';
-                chatWindow.style.top = `${top}px`;
-                chatWindow.style.left = `${left}px`;
-                chatWindow.innerHTML = `
-                    <div class="chat-window-header" style="background: ${color.primary};">
-                        <span>💬 Chat: ${order.groupName}</span>
-                        <button onclick="closeChatWindow(${orderId})" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer;">✕</button>
-                    </div>
-                    <div class="chat-window-body" id="chatBody_${orderId}"></div>
-                    <div class="chat-window-footer">
-                        <div style="display: flex; gap: 10px;">
-                            <input type="text" id="chatInput_${orderId}" placeholder="Escribe un mensaje..." 
-                                style="flex: 1; padding: 10px; border: 2px solid ${color.primary}; border-radius: 8px;" 
-                                onkeypress="if(event.key==='Enter') sendChatMessage(${orderId})">
-                            <button class="btn btn-primary btn-small" onclick="sendChatMessage(${orderId})" style="background: ${color.primary};">Enviar</button>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(chatWindow);
-            }
-            
-            document.getElementById(`chat_${orderId}`).classList.add('open');
-            updateChatWindow(orderId);
-        }
-        
-        function closeChatWindow(orderId) {
-            document.getElementById(`chat_${orderId}`).classList.remove('open');
-        }
-        
-        function sendChatMessage(orderId) {
-            const input = document.getElementById(`chatInput_${orderId}`);
-            const text = input.value.trim();
-            if (!text) return;
-            
-            addChatMessage(orderId, 'restaurant', text);
-            input.value = '';
-            updateChatWindow(orderId);
-        }
-        
-        function updateChatWindow(orderId) {
-            const container = document.getElementById(`chatBody_${orderId}`);
-            if (!chatMessages[orderId] || chatMessages[orderId].length === 0) {
-                container.innerHTML = '<div style="text-align: center; color: #9ca3af; padding: 20px;">No hay mensajes</div>';
-                return;
-            }
-            
-            const messages = chatMessages[orderId];
-            const html = messages.map(msg => `
-                <div class="chat-message ${msg.sender}">
-                    <div class="sender">${msg.sender === 'guide' ? '👨‍✈️ Guía' : '🏨 Restaurante'}</div>
-                    <div>${msg.text}</div>
-                    <div class="time">${msg.time}</div>
-                </div>
-            `).join('');
-            
-            container.innerHTML = html;
-            container.scrollTop = container.scrollHeight;
-        }
-        
-        function addChatMessage(orderId, sender, text) {
-            const time = new Date().toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
-            if (!chatMessages[orderId]) chatMessages[orderId] = [];
-            chatMessages[orderId].push({ sender, text, time, read: false });
-            
-            saveToStorage(STORAGE_KEYS.CHAT_MESSAGES, chatMessages);
-            
-            // Mostrar notificación visual si el chat no está abierto
-            const chatWindow = document.getElementById(`chat_${orderId}`);
-            if (!chatWindow || chatWindow.style.display === 'none') {
-                showChatNotification(orderId, sender, text);
-            }
-            
-            updateGuideChatDisplay();
-            if (chatWindow) {
-                updateChatWindow(orderId);
-            }
-            updateReception();
-        }
-        
-        function showChatNotification(orderId, sender, text) {
-            const notification = document.getElementById('chatNotification');
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-            
-            notification.innerHTML = `
-                <div style="font-weight: 600; margin-bottom: 5px;">
-                    ${sender === 'guide' ? '👨‍✈️ Mensaje del Guía' : '🏨 Mensaje del Restaurante'}
-                </div>
-                <div style="font-size: 13px; color: #667eea; margin-bottom: 5px;">
-                    ${order.groupName}
-                </div>
-                <div style="font-size: 14px; color: #374151;">
-                    ${text.substring(0, 60)}${text.length > 60 ? '...' : ''}
-                </div>
-            `;
-            notification.classList.add('show');
-            notification.onclick = () => {
-                openChatWindow(orderId, 100, 100);
-                notification.classList.remove('show');
-            };
-            
-            setTimeout(() => notification.classList.remove('show'), 5000);
-        }
-        
-        function updateGuideChatDisplay() {
-            if (!currentGuideOrderId || !chatMessages[currentGuideOrderId]) {
-                document.getElementById('guideMainChat').innerHTML = 
-                    '<div style="text-align: center; color: #9ca3af; padding: 20px;">Envía tu pedido para activar el chat</div>';
-                return;
-            }
-            
-            const messages = chatMessages[currentGuideOrderId];
-            const html = messages.map(msg => `
-                <div class="chat-message ${msg.sender}">
-                    <div class="sender">${msg.sender === 'guide' ? '👨‍✈️ Tú (Guía)' : '🏨 Restaurante'}</div>
-                    <div>${msg.text}</div>
-                    <div class="time">${msg.time}</div>
-                </div>
-            `).join('');
-            
-            document.getElementById('guideMainChat').innerHTML = html;
-            document.getElementById('guideMainChat').scrollTop = document.getElementById('guideMainChat').scrollHeight;
-        }
-        
+
         function sendGuideMessage() {
-            if (!currentGuideOrderId) {
-                showNotification('⚠️ Primero envía tu pedido');
-                return;
-            }
-            const input = document.getElementById('guideMessageInput');
-            const text = input.value.trim();
-            if (!text) return;
-            addChatMessage(currentGuideOrderId, 'guide', text);
-            input.value = '';
-        }
-        
-        function updateKitchen() {
-            const container = document.getElementById('kitchenContainer');
-            const activeOrders = getActiveOrders();
+            const input = document.getElementById('guideChatInput');
+            const message = input.value.trim();
             
-            if (activeOrders.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No hay órdenes pendientes</div>';
-                return;
-            }
-            
-            const sortedOrders = [...activeOrders].sort((a, b) => a.distance - b.distance);
-            
-            let html = '';
-            sortedOrders.forEach(order => {
-                const color = getGroupColor(order.id);
-                
-                let urgencyColor = '#667eea';
-                let urgencyText = '⏳ En camino';
-                let urgencyBg = '#f3f4f6';
-                
-                if (order.distance < 1) {
-                    urgencyColor = '#ef4444';
-                    urgencyText = '🔥 ¡COCINAR AHORA!';
-                    urgencyBg = '#fee2e2';
-                } else if (order.distance < 3) {
-                    urgencyColor = '#f59e0b';
-                    urgencyText = '⚠️ ALISTAR INGREDIENTES';
-                    urgencyBg = '#fef3c7';
-                }
-                
-                const dishesHtml = order.dishes.map(d => `
-                    <div style="background: #f9fafb; padding: 12px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid ${color.primary};">
-                        <div style="font-size: 16px; font-weight: bold; color: #1f2937;">${d.name} x${d.qty}</div>
-                        ${d.restrictions ? `<div class="restriction-badge" style="margin-top: 5px;">⚠️ ${d.restrictions}</div>` : ''}
-                    </div>
-                `).join('');
-                
-                html += `<div style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 15px; border-left: 6px solid ${color.primary}; box-shadow: 0 0 0 3px ${color.bg};">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                        <div>
-                            ${getColorBadge(order.id, order.groupName)}
-                            <div style="color: #6b7280; font-size: 14px; margin-top: 8px;">👤 ${order.guideName}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 28px; font-weight: bold; color: ${color.primary};">${order.eta}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: ${urgencyBg}; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${urgencyColor};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span class="gps-indicator"></span>
-                                <span style="font-weight: 600; color: #1f2937;">Ubicación GPS</span>
-                            </div>
-                            <span class="distance-badge" style="background: ${urgencyColor};">${order.distance.toFixed(1)} km</span>
-                        </div>
-                        <div style="font-size: 18px; font-weight: bold; color: ${urgencyColor}; text-align: center; padding: 10px;">
-                            ${urgencyText}
-                        </div>
-                    </div>
-                    
-                    <div style="background: ${color.bg}; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid ${color.primary};">
-                        <strong style="color: ${color.dark};">👥 PAX: ${order.pax}</strong>
-                    </div>
-                    
-                    <h4 style="color: #1f2937; margin-bottom: 10px; font-size: 16px;">🍽️ Platos a Preparar:</h4>
-                    ${dishesHtml}
-                    
-                    <button class="btn btn-success" onclick="markAsServed(${order.id})" style="width: 100%; margin-top: 15px; padding: 12px; font-size: 16px;">
-                        ✓ Marcar como Servido
-                    </button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-        
-        function updateService() {
-            const container = document.getElementById('serviceContainer');
-            const activeOrders = getActiveOrders();
-            
-            if (activeOrders.length === 0) {
-                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">No hay grupos para servir</div>';
-                return;
-            }
-            
-            const sortedOrders = [...activeOrders].sort((a, b) => {
-                const timeA = new Date(`2000-01-01T${a.eta}`);
-                const timeB = new Date(`2000-01-01T${b.eta}`);
-                return timeA - timeB;
-            });
-            
-            let html = '';
-            sortedOrders.forEach(order => {
-                const color = getGroupColor(order.id);
-                
-                let statusColor = '#667eea';
-                let statusText = '⏳ En camino';
-                let statusBg = '#e0e7ff';
-                
-                if (order.distance < 0.5) {
-                    statusColor = '#ef4444';
-                    statusText = '🔴 LLEGANDO AHORA';
-                    statusBg = '#fee2e2';
-                } else if (order.distance < 1.5) {
-                    statusColor = '#f59e0b';
-                    statusText = '🟡 PREPARAR MESAS';
-                    statusBg = '#fef3c7';
-                } else if (order.distance < 3) {
-                    statusColor = '#06b6d4';
-                    statusText = '🔵 Próximo a llegar';
-                    statusBg = '#cffafe';
-                }
-                
-                const dishesHtml = order.dishes.map(d => `
-                    <div style="display: flex; justify-content: space-between; padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; border-left: 3px solid ${color.primary};">
-                        <span>${d.name}</span>
-                        <span style="font-weight: bold; color: ${color.primary};">${d.qty}x</span>
-                    </div>
-                `).join('');
-                
-                html += `<div class="group-card" style="border-left: 6px solid ${color.primary}; box-shadow: 0 0 0 3px ${color.bg};">
-                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px;">
-                        <div style="flex: 1;">
-                            ${getColorBadge(order.id, order.groupName)}
-                            <div style="color: #6b7280; margin-top: 8px; font-size: 14px;">👤 ${order.guideName}</div>
-                            <div style="color: #6b7280; margin-top: 3px; font-size: 14px;">👥 PAX: ${order.pax}</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-size: 32px; font-weight: bold; color: ${color.primary};">${order.eta}</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: ${statusBg}; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid ${statusColor};">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <div style="display: flex; align-items: center; gap: 8px;">
-                                <span class="gps-indicator"></span>
-                                <strong style="color: #1f2937;">Ubicación GPS</strong>
-                            </div>
-                            <span class="distance-badge" style="background: ${statusColor};">${order.distance.toFixed(1)} km</span>
-                        </div>
-                        <div style="font-size: 16px; font-weight: bold; color: ${statusColor}; text-align: center; padding: 8px 0;">
-                            ${statusText}
-                        </div>
-                    </div>
-                    
-                    <h4 style="margin-bottom: 10px; color: ${color.dark};">🍽️ Platos del Pedido:</h4>
-                    ${dishesHtml}
-                    
-                    <button class="btn btn-success" onclick="markAsServed(${order.id})" style="width: 100%; margin-top: 15px; padding: 12px; font-size: 16px; background: ${color.primary};">
-                        ✓ Marcar como Servido
-                    </button>
-                </div>`;
-            });
-            container.innerHTML = html;
-        }
-        
-        // Gestión de datos
-        function clearAllData() {
-            if (!confirm('⚠️ ¿Estás seguro? Esto eliminará TODOS los datos guardados (platos, pedidos, códigos, chats)')) return;
-            
-            Object.values(STORAGE_KEYS).forEach(key => {
-                localStorage.removeItem(key);
-            });
-            
-            showNotification('✅ Todos los datos han sido eliminados');
-            setTimeout(() => location.reload(), 1500);
-        }
-        
-        function exportData() {
-            const data = {
-                version: DB_VERSION,
-                exportDate: new Date().toISOString(),
-                dishes,
-                orders,
-                accessCodes,
-                chatMessages,
-                restaurantLocation
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `eta_backup_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            
-            showNotification('✅ Datos exportados correctamente');
-        }
-        
-        function showNotification(message) {
-            const notif = document.getElementById('notification');
-            notif.innerHTML = `<h3>${message}</h3>`;
-            notif.classList.add('show');
-            setTimeout(() => notif.classList.remove('show'), 3000);
-        }
-        
-        // Inicialización
-        window.addEventListener('load', () => {
-            // Inicializar sistema de autenticación
-            initDefaultUsers();
-            checkSession();
-            
-            // Continuar con inicialización original si el usuario está autenticado
-            if (currentUser) {
-                // Verificar y archivar pedidos servidos viejos
-                checkAndArchiveServed();
-                
-                checkGPSSupport();
-                updateGPSBadge(gpsEnabled);
-                updateCurrentDishList();
-                updateAccessCodesList();
-                
-                // Actualizar tabla de usuarios si está en la vista de usuarios
-                if (currentUser.role === 'admin') {
-                    updateUsersTable();
-                }
-                
-                // Auto-update GPS cada 5 segundos si está activo
-                setInterval(() => {
-                    if (gpsEnabled) {
-                        updateAllGPSDisplays();
+            if (!message) return;
+
+            db.ref('orders').orderByChild('accessCode').equalTo(currentAccessCode).once('value', (snapshot) => {
+                let orderKey = null;
+                snapshot.forEach(child => {
+                    if (!child.val().served) {
+                        orderKey = child.key;
                     }
-                }, 5000);
-                
-                // Verificar auto-archivo cada hora
-                setInterval(() => {
-                    checkAndArchiveServed();
-                }, 60 * 60 * 1000);
+                });
+
+                if (!orderKey) {
+                    showNotification('Primero debe enviar un pedido', 'error');
+                    return;
+                }
+
+                db.ref(`orders/${orderKey}/chat`).once('value', (chatSnapshot) => {
+                    const messages = chatSnapshot.val() || [];
+                    messages.push({
+                        sender: 'Guía',
+                        message: message,
+                        timestamp: Date.now()
+                    });
+                    
+                    db.ref(`orders/${orderKey}/chat`).set(messages).then(() => {
+                        input.value = '';
+                    });
+                });
+            });
+        }
+
+        // Auto-refresh para pedidos
+        setInterval(() => {
+            if (currentView === 'orders' && currentUser) {
+                updateOrdersList();
+            } else if (currentView === 'served' && currentUser) {
+                updateServedList();
             }
-        });
-        
-        // Guardar automáticamente antes de cerrar
-        window.addEventListener('beforeunload', () => {
-            saveToStorage(STORAGE_KEYS.DISHES, dishes);
-            saveToStorage(STORAGE_KEYS.ORDERS, orders);
-            saveToStorage(STORAGE_KEYS.ACCESS_CODES, accessCodes);
-            saveToStorage(STORAGE_KEYS.CHAT_MESSAGES, chatMessages);
-            saveToStorage(STORAGE_KEYS.SETTINGS, restaurantLocation);
-        });
+        }, 5000);
     </script>
 </body>
 </html>
