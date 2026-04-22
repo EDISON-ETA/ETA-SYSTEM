@@ -2,8 +2,31 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema ETA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>ETA Go</title>
+    <meta name="application-name" content="ETA Go">
+    <meta name="description" content="Gestión de grupos turísticos en tiempo real">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ETA Go">
+    <link rel="manifest" href="data:application/json,{
+        &quot;name&quot;: &quot;ETA Go&quot;,
+        &quot;short_name&quot;: &quot;ETA Go&quot;,
+        &quot;description&quot;: &quot;Gestión de grupos turísticos en tiempo real&quot;,
+        &quot;start_url&quot;: &quot;.&quot;,
+        &quot;display&quot;: &quot;standalone&quot;,
+        &quot;background_color&quot;: &quot;#0f172a&quot;,
+        &quot;theme_color&quot;: &quot;#4f46e5&quot;,
+        &quot;orientation&quot;: &quot;portrait&quot;,
+        &quot;icons&quot;: [{
+            &quot;src&quot;: &quot;data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f46e5'/><text y='.9em' font-size='80' x='10'>🎯</text></svg>&quot;,
+            &quot;sizes&quot;: &quot;any&quot;,
+            &quot;type&quot;: &quot;image/svg+xml&quot;,
+            &quot;purpose&quot;: &quot;any maskable&quot;
+        }]
+    }">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -2054,5 +2077,60 @@ window.addEventListener('load', () => {
     });
 });
 </script>
+<script>
+// PWA Install Prompt
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Show install button after 3 seconds
+    setTimeout(() => {
+        if (deferredPrompt) showInstallBanner();
+    }, 3000);
+});
+
+function showInstallBanner() {
+    const existing = document.getElementById('installBanner');
+    if (existing) return;
+    const banner = document.createElement('div');
+    banner.id = 'installBanner';
+    banner.style.cssText = `
+        position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+        background: white; border-radius: 16px; padding: 16px 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2); z-index: 9999;
+        display: flex; align-items: center; gap: 12px; max-width: 340px; width: 90%;
+        border-left: 4px solid #4f46e5; animation: slideUp 0.3s ease;
+    `;
+    banner.innerHTML = \`
+        <div style="font-size:32px;">📲</div>
+        <div style="flex:1;">
+            <div style="font-weight:700;font-size:14px;color:#1f2937;">Instalar ETA Go</div>
+            <div style="font-size:12px;color:#6b7280;margin-top:2px;">Agregar a pantalla de inicio para acceso rápido</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+            <button onclick="installPWA()" style="padding:8px 14px;background:#4f46e5;color:white;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;">Instalar</button>
+            <button onclick="document.getElementById('installBanner').remove()" style="padding:6px 14px;background:#f3f4f6;color:#6b7280;border:none;border-radius:8px;font-size:12px;cursor:pointer;">Ahora no</button>
+        </div>
+    \`;
+    document.body.appendChild(banner);
+}
+
+async function installPWA() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const result = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    document.getElementById('installBanner')?.remove();
+}
+
+// Handle installed state
+window.addEventListener('appinstalled', () => {
+    deferredPrompt = null;
+    document.getElementById('installBanner')?.remove();
+});
+</script>
+<style>
+@keyframes slideUp { from { transform: translateX(-50%) translateY(20px); opacity:0; } to { transform: translateX(-50%) translateY(0); opacity:1; } }
+</style>
 </body>
 </html>
