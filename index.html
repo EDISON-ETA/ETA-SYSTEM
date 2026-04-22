@@ -877,14 +877,29 @@ async function loadRestaurantsList() {
     const el = document.getElementById('restaurantsList');
     el.innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:20px;">Cargando...</p>';
     try {
-        const snap = await db.ref('restaurantes/_superadmin/restaurants').get();
-        console.log('Firebase snap exists:', snap.exists());
-        console.log('Firebase snap val:', JSON.stringify(snap.val()));
+        // Read all restaurants directly from Firebase root
+        const snap = await db.ref('restaurantes').get();
         const rests = [];
         // Always show demo-restaurant first
         rests.push({ id: 'demo-restaurant', name: '🧪 Demo Restaurant (Pruebas)', city: 'Sistema', adminUser: 'admin', suspended: false });
-        if (snap.exists()) snap.forEach(c => rests.push({ id: c.key, ...c.val() }));
-        console.log('Total restaurants to show:', rests.length);
+        if (snap.exists()) {
+            snap.forEach(child => {
+                const key = child.key;
+                if (key === '_superadmin' || key === 'demo-restaurant') return;
+                const val = child.val();
+                // Get info from settings if available
+                const settings = val.settings || {};
+                const users = val.users || {};
+                const adminUser = Object.entries(users).find(([u,d]) => d.role === 'admin');
+                rests.push({
+                    id: key,
+                    name: settings.name || key,
+                    city: settings.city || '',
+                    adminUser: adminUser ? adminUser[0] : '-',
+                    suspended: val.suspended || false
+                });
+            });
+        }
         el.innerHTML = rests.map(r => `
             <div class="card" style="margin-bottom:12px;">
                 <div class="card-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
