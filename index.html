@@ -547,15 +547,18 @@
             <div class="card-header"><h3>🍴 Selecciona los Platos</h3></div>
             <div class="card-body" id="guideMenuList"></div>
         </div>
-        <button class="btn btn-success btn-full btn-lg" onclick="sendOrder()" style="margin-bottom:80px;">
+        <button class="btn btn-success btn-full btn-lg" onclick="sendOrder()" style="margin-bottom:12px;">
             📤 Enviar Pedido al Restaurante
+        </button>
+        <button class="btn btn-ghost btn-full" onclick="openGuideChat()" style="margin-bottom:80px;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.3);">
+            💬 Chat con el Restaurante
         </button>
     </div>
 </div>
 
 <!-- CHAT WINDOW (sin botón flotante) -->
 <div id="chatWindowContainer" style="position:fixed;bottom:24px;right:24px;z-index:1000;display:none;">
-    <div class="chat-window open" id="chatWindow">
+    <div class="chat-window" id="chatWindow" style="display:block;">
         <div class="chat-win-header">
             <h4>💬 <span id="chatTitle">Chat</span></h4>
             <button class="close-chat" onclick="toggleChat()">✕</button>
@@ -939,12 +942,27 @@ function generateTempPassword() {
     return word + num;
 }
 
-function createRestaurant() {
+async function createRestaurant() {
     const name = document.getElementById('newRestName').value.trim();
     const city = document.getElementById('newRestCity').value.trim();
     const adminUser = document.getElementById('newRestUser').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
     const phone = document.getElementById('newRestPhone').value.trim().replace(/[^0-9]/g,'');
     if (!name || !adminUser || !phone) { notify('Completa los campos obligatorios incluyendo WhatsApp', 'error'); return; }
+
+    // Verify username is not already taken
+    const allRests = await db.ref('restaurantes').get();
+    if (allRests.exists()) {
+        let userExists = false;
+        allRests.forEach(child => {
+            if (child.key === '_superadmin') return;
+            const users = child.val().users || {};
+            if (users[adminUser]) userExists = true;
+        });
+        if (userExists) {
+            notify(`⚠️ El usuario "${adminUser}" ya está en uso. Elige otro nombre.`, 'error');
+            return;
+        }
+    }
 
     // Generate temp password and unique restaurant ID
     const tempPass = generateTempPassword();
@@ -958,10 +976,10 @@ function createRestaurant() {
             db.ref(`restaurantes/${restId}/users/${adminUser}`).set({
                 password: tempPass, role: 'admin', name: `Admin ${name}`
             }),
-            db.ref(`restaurantes/${restId}/users/cocina`).set({
+            db.ref(`restaurantes/${restId}/users/${adminUser}cocina`).set({
                 password: 'cocina123', role: 'cocina', name: 'Cocina'
             }),
-            db.ref(`restaurantes/${restId}/users/servicio`).set({
+            db.ref(`restaurantes/${restId}/users/${adminUser}servicio`).set({
                 password: 'servicio123', role: 'servicio', name: 'Servicio'
             }),
             db.ref(`restaurantes/${restId}/settings`).set({
@@ -1003,11 +1021,11 @@ function showRestCredentials(name, user, pass, restId, phone) {
                 </div>
                 <div style="margin-bottom:0;">
                     <span style="font-size:13px;color:var(--gray-500);">Cocina:</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gray-700);margin-left:8px;">cocina / cocina123</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gray-700);margin-left:8px;">${user}cocina / cocina123</span>
                 </div>
                 <div style="margin-top:8px;">
                     <span style="font-size:13px;color:var(--gray-500);">Servicio:</span>
-                    <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gray-700);margin-left:8px;">servicio / servicio123</span>
+                    <span style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--gray-700);margin-left:8px;">${user}servicio / servicio123</span>
                 </div>
             </div>
             <div style="background:#fef3c7;border-radius:8px;padding:12px;margin-bottom:20px;font-size:13px;color:#92400e;">
@@ -1081,6 +1099,8 @@ function groupByCategory(dishes) {
 
 // ===== FIREBASE LISTENERS (start after login) =====
 function startListeners() {
+    // Update chat badges every 5 seconds
+    setInterval(() => { if (currentUser) updateReceptionBadges(); }, 5000);
     // MENU listener
     R('menu').on('value', snap => {
         dishesCache = snap.val() || {};
@@ -1208,7 +1228,7 @@ function renderReception() {
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
                     ${proxBadge(o.eta)}
-                    <button class="btn btn-ghost btn-sm" style="position:relative;" id="chatBtn-${o.accessCode||o.key}" onclick="openChat('${o.accessCode||o.key}','${o.groupName||'Grupo'}')">💬<span id="unread-${o.accessCode||o.key}" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--danger);color:white;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:none;align-items:center;justify-content:center;">!</span></button>
+                    <button style="position:relative;background:var(--brand);color:white;border:none;border-radius:10px;padding:8px 14px;font-size:20px;cursor:pointer;display:flex;align-items:center;gap:6px;" id="chatBtn-${o.accessCode||o.key}" onclick="openChat('${o.accessCode||o.key}','${o.groupName||'Grupo'}')">💬<span style="font-size:13px;font-weight:600;">Chat</span><span id="unread-${o.accessCode||o.key}" style="display:none;position:absolute;top:-8px;right:-8px;background:#ef4444;color:white;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span></button>
                     <button class="btn btn-success btn-sm" onclick="markServed('${o.key}','${o.accessCode||''}')">✅ Servido</button>
                 </div>
             </div>
@@ -1980,6 +2000,15 @@ function sendOrder() {
 }
 
 // ===== CHAT =====
+function openGuideChat() {
+    if (!guideCode) return;
+    chatOrderKey = guideCode.code || guideCode.key;
+    document.getElementById('chatTitle').textContent = '💬 Chat con Restaurante';
+    chatOpen = false;
+    toggleChat();
+    startChatListener();
+}
+
 function toggleChat() {
     chatOpen = !chatOpen;
     const container = document.getElementById('chatWindowContainer');
@@ -2002,9 +2031,44 @@ function toggleChat() {
         }
     }
 }
+function updateReceptionBadges() {
+    if (!RID) return;
+    R('chat').once('value', snap => {
+        if (!snap.exists()) return;
+        snap.forEach(orderSnap => {
+            const key = orderSnap.key;
+            let unread = 0;
+            orderSnap.forEach(msgSnap => {
+                const m = msgSnap.val();
+                if (!m.read && m.from === 'guide') unread++;
+            });
+            const badge = document.getElementById(`unread-${key}`);
+            if (badge) {
+                if (unread > 0) {
+                    badge.textContent = unread;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        });
+    });
+}
+
 function openChat(accessCode, groupName) {
     chatOrderKey = accessCode;
     document.getElementById('chatTitle').textContent = `💬 ${groupName}`;
+    // Mark messages as read
+    R(`chat/${accessCode}`).once('value', snap => {
+        if (!snap.exists()) return;
+        snap.forEach(c => {
+            const m = c.val();
+            if (!m.read && m.from === 'guide') R(`chat/${accessCode}/${c.key}/read`).set(true);
+        });
+    });
+    // Clear badge
+    const badge = document.getElementById(`unread-${accessCode}`);
+    if (badge) badge.style.display = 'none';
     chatOpen = false;
     toggleChat();
     startChatListener(accessCode);
