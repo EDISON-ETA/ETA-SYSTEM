@@ -850,13 +850,18 @@ function superAdminLogout() {
     showInitial();
 }
 
-function loadRestaurantsList() {
-    SUPER_ADMIN_REF('restaurants').once('value', snap => {
-        const el = document.getElementById('restaurantsList');
+async function loadRestaurantsList() {
+    const el = document.getElementById('restaurantsList');
+    el.innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:20px;">Cargando...</p>';
+    try {
+        const snap = await db.ref('restaurantes/_superadmin/restaurants').get();
+        console.log('Firebase snap exists:', snap.exists());
+        console.log('Firebase snap val:', JSON.stringify(snap.val()));
         const rests = [];
         // Always show demo-restaurant first
         rests.push({ id: 'demo-restaurant', name: '🧪 Demo Restaurant (Pruebas)', city: 'Sistema', adminUser: 'admin', suspended: false });
         if (snap.exists()) snap.forEach(c => rests.push({ id: c.key, ...c.val() }));
+        console.log('Total restaurants to show:', rests.length);
         el.innerHTML = rests.map(r => `
             <div class="card" style="margin-bottom:12px;">
                 <div class="card-body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -879,7 +884,9 @@ function loadRestaurantsList() {
                     </div>
                 </div>
             </div>`).join('');
-    });
+    } catch(e) {
+        el.innerHTML = '<p style="color:var(--danger);text-align:center;padding:20px;">Error al cargar: ' + e.message + '</p>';
+    }
 }
 
 function openNewRestModal() {
@@ -903,7 +910,7 @@ function createRestaurant() {
 
     // Generate temp password and unique restaurant ID
     const tempPass = generateTempPassword();
-    const restId = adminUser + '-' + Date.now().toString().slice(-4);
+    const restId = 'rest' + Date.now().toString() + '' + Math.floor(Math.random()*1000);
 
     // Save all data using Promise.all for reliability
     const restData = { name, city, adminUser, phone, createdAt: Date.now(), suspended: false };
@@ -925,8 +932,8 @@ function createRestaurant() {
         ]))
         .then(() => {
             closeModal('modalNewRest');
-            loadRestaurantsList();
             showRestCredentials(name, adminUser, tempPass, restId, phone);
+            setTimeout(() => loadRestaurantsList(), 1500);
         })
         .catch(e => notify('Error al crear restaurante: ' + e.message, 'error'));
 }
