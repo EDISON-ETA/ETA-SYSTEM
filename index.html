@@ -557,16 +557,16 @@
 </div>
 
 <!-- CHAT WINDOW (sin botón flotante) -->
-<div id="chatWindowContainer" style="position:fixed;bottom:24px;right:24px;z-index:1000;display:none;">
-    <div class="chat-window" id="chatWindow" style="display:block;">
-        <div class="chat-win-header">
-            <h4>💬 <span id="chatTitle">Chat</span></h4>
-            <button class="close-chat" onclick="toggleChat()">✕</button>
+<div id="chatWindowContainer" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:none;">
+    <div id="chatWindow" style="display:flex;flex-direction:column;width:340px;height:460px;background:white;border-radius:20px;box-shadow:0 20px 40px rgba(0,0,0,0.2);overflow:hidden;">
+        <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);color:white;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+            <h4 style="margin:0;font-size:15px;">💬 <span id="chatTitle">Chat</span></h4>
+            <button onclick="toggleChat()" style="background:rgba(255,255,255,0.2);border:none;color:white;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:14px;">✕</button>
         </div>
-        <div class="chat-messages-area" id="chatArea"></div>
-        <div class="chat-input-area">
-            <input type="text" id="chatInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')sendChat()">
-            <button class="chat-send-btn" onclick="sendChat()">➤</button>
+        <div id="chatArea" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;background:#f9fafb;display:flex;flex-direction:column;gap:10px;min-height:0;"></div>
+        <div style="padding:12px;background:white;border-top:1px solid #e5e7eb;display:flex;gap:8px;flex-shrink:0;align-items:center;">
+            <input type="text" id="chatInput" placeholder="Escribe un mensaje..." onkeypress="if(event.key==='Enter')sendChat()" style="flex:1;padding:10px 14px;border:2px solid #e5e7eb;border-radius:10px;font-size:14px;font-family:inherit;outline:none;">
+            <button onclick="sendChat()" style="background:#4f46e5;color:white;border:none;border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer;flex-shrink:0;">➤</button>
         </div>
     </div>
 </div>
