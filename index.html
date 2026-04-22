@@ -307,7 +307,7 @@
 <div id="screenInitial">
     <div class="initial-wrap">
         <div class="initial-logo">🎯</div>
-        <div class="initial-title">Sistema ETA</div>
+        <div class="initial-title">ETA Go</div>
         <div class="initial-sub">Gestión de grupos turísticos en tiempo real</div>
         <div class="initial-cards">
             <div class="initial-card" onclick="showLogin()">
@@ -552,9 +552,9 @@
     </div>
 </div>
 
-<!-- CHAT FLOTANTE -->
-<div style="position:fixed;bottom:24px;right:24px;z-index:1000;">
-    <div class="chat-window" id="chatWindow">
+<!-- CHAT WINDOW (sin botón flotante) -->
+<div id="chatWindowContainer" style="position:fixed;bottom:24px;right:24px;z-index:1000;display:none;">
+    <div class="chat-window open" id="chatWindow">
         <div class="chat-win-header">
             <h4>💬 <span id="chatTitle">Chat</span></h4>
             <button class="close-chat" onclick="toggleChat()">✕</button>
@@ -565,11 +565,9 @@
             <button class="chat-send-btn" onclick="sendChat()">➤</button>
         </div>
     </div>
-    <button class="chat-float-btn" onclick="toggleChat()" style="position:relative;">
-        💬
-        <span id="chatBadge" class="chat-badge" style="display:none;">0</span>
-    </button>
 </div>
+<!-- Badge de mensajes no leídos oculto -->
+<span id="chatBadge" style="display:none;">0</span>
 
 <!-- MODAL: PLATO -->
 <div class="modal-overlay" id="modalDish">
@@ -822,6 +820,8 @@ function loginToRestaurant(user, pass, restId) {
         if (u && (u.password === pass || validTemp)) {
             RID = restId;
             currentUser = { username: user, ...u };
+            // Save session to localStorage
+            localStorage.setItem('eta_session', JSON.stringify({ username: user, restId, user: u }));
             document.getElementById('userChip').textContent = `👤 ${u.name}`;
             showApp();
             setupNav();
@@ -829,7 +829,6 @@ function loginToRestaurant(user, pass, restId) {
             loadSettings();
             if (validTemp) {
                 notify(`⚠️ Ingresaste con código temporal. Cambia tu contraseña en Usuarios.`, 'warning');
-                // Clear temp code
                 db.ref(`restaurantes/${restId}/users/${user}/tempCode`).remove();
             } else {
                 notify(`¡Bienvenido, ${u.name}!`);
@@ -1050,6 +1049,8 @@ function doLogout() {
     document.getElementById('chatWindow').classList.remove('open');
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
+    localStorage.removeItem('eta_session');
+    localStorage.removeItem('eta_guide_session');
     showInitial();
     notify('Sesión cerrada');
 }
@@ -1806,6 +1807,8 @@ function doGuideAccessWithCode(code) {
         document.getElementById('paxDisplay').textContent = guidePax;
         document.getElementById('guideWelcome').textContent = `${cData.groupName||'Grupo'} · ${code}`;
         chatOrderKey = code;
+        // Save guide session
+        localStorage.setItem('eta_guide_session', JSON.stringify({ code, restId: RID }));
 
         // Load settings for restaurant location
         R('settings').once('value', snap => {
@@ -1860,12 +1863,13 @@ function doGuideLogout() {
     guideCode = null; guideMenu = [];
     if (gpsWatch) navigator.geolocation.clearWatch(gpsWatch);
     R('chat').off();
-    // Close chat window
     chatOpen = false;
     chatOrderKey = null;
     document.getElementById('chatWindow').classList.remove('open');
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
+    localStorage.removeItem('eta_guide_session');
+    localStorage.removeItem('eta_session');
     showInitial();
 }
 
@@ -1977,7 +1981,8 @@ function sendOrder() {
 // ===== CHAT =====
 function toggleChat() {
     chatOpen = !chatOpen;
-    document.getElementById('chatWindow').classList.toggle('open', chatOpen);
+    const container = document.getElementById('chatWindowContainer');
+    if (container) container.style.display = chatOpen ? 'block' : 'none';
     if (chatOpen) {
         document.getElementById('chatBadge').style.display = 'none';
         renderChatMessages();
@@ -2079,6 +2084,38 @@ document.addEventListener('click', e => {
 
 // ===== INIT =====
 window.addEventListener('load', () => {
+    // Restore session if exists
+    const savedSession = localStorage.getItem('eta_session');
+    const savedGuideSession = localStorage.getItem('eta_guide_session');
+
+    if (savedSession) {
+        try {
+            const { username, restId, user: u } = JSON.parse(savedSession);
+            RID = restId;
+            currentUser = { username, ...u };
+            document.getElementById('userChip').textContent = `👤 ${u.name}`;
+            showApp();
+            setupNav();
+            startListeners();
+            loadSettings();
+        } catch(e) {
+            localStorage.removeItem('eta_session');
+        }
+        return;
+    }
+
+    if (savedGuideSession) {
+        try {
+            const gs = JSON.parse(savedGuideSession);
+            document.getElementById('guideCodeInput').value = gs.code;
+            showGuide();
+            doGuideAccess();
+        } catch(e) {
+            localStorage.removeItem('eta_guide_session');
+        }
+        return;
+    }
+
     // Menu starts empty - restaurant creates their own dishes
     // Ensure default users exist
     R('users').once('value', snap => {
