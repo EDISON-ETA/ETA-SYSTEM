@@ -1965,13 +1965,38 @@ function calcDist(la1,ln1,la2,ln2) {
     return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-function updateETA() {
+async function updateETA() {
     if (!userLoc) return;
-    const dist = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
-    const time = Math.round((dist/40)*60);
+    // Linear distance as fallback
+    const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
+    const timeLinear = Math.round((distLinear/40)*60);
     document.getElementById('etaBox').style.display = 'block';
-    document.getElementById('etaTime').textContent = time;
-    document.getElementById('etaDist').textContent = `📍 ${dist.toFixed(2)} km del restaurante`;
+    document.getElementById('etaTime').textContent = timeLinear;
+    document.getElementById('etaDist').textContent = `📍 ${distLinear.toFixed(2)} km del restaurante`;
+
+    // Try Google Distance Matrix for real route
+    try {
+        const origin = `${userLoc.lat},${userLoc.lng}`;
+        const dest = `${restLoc.lat},${restLoc.lng}`;
+        const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${dest}&mode=driving&key=AIzaSyDVviMlLZELaZvjg45KFqHBDsCTZQBTiyw`;
+        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+        const resp = await fetch(proxyUrl);
+        const data = await resp.json();
+        if (data.rows?.[0]?.elements?.[0]?.status === 'OK') {
+            const el = data.rows[0].elements[0];
+            const distText = el.distance.text;
+            const durationMins = Math.round(el.duration.value / 60);
+            document.getElementById('etaTime').textContent = durationMins;
+            document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
+            // Update Firebase with real ETA
+            if (guideCode) {
+                const etaData = { time: durationMins, dist: el.distance.value/1000, lat: userLoc.lat, lng: userLoc.lng, ts: Date.now() };
+                R(`orders/${guideCode.key}/eta`).set(etaData);
+            }
+        }
+    } catch(e) {
+        // Fallback to linear already shown above
+    }
 }
 
 // ===== ENVIAR PEDIDO =====
