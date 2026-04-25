@@ -695,6 +695,7 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 let RID = null;
+let googleETA = null; // Stores real ETA from Google Maps
 const R = path => db.ref(`restaurantes/${RID}/${path}`);
 const SUPER_ADMIN_REF = path => db.ref(`restaurantes/_superadmin/${path}`);
 const DB_URL = 'https://eta-system-21b43-default-rtdb.firebaseio.com';
@@ -1988,11 +1989,8 @@ async function updateETA() {
             const durationMins = Math.round(el.duration.value / 60);
             document.getElementById('etaTime').textContent = durationMins;
             document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
-            // Update Firebase with real ETA
-            if (guideCode) {
-                const etaData = { time: durationMins, dist: el.distance.value/1000, lat: userLoc.lat, lng: userLoc.lng, ts: Date.now() };
-                R(`orders/${guideCode.key}/eta`).set(etaData);
-            }
+            // Store real ETA for use when sending order
+            googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins };
         }
     } catch(e) {
         // Fallback to linear already shown above
@@ -2005,7 +2003,11 @@ function sendOrder() {
     if (!selected.length) { notify('Selecciona al menos un plato','error'); return; }
 
     let eta = null;
-    if (userLoc) {
+    if (googleETA) {
+        // Use accurate Google Maps ETA if available
+        eta = googleETA;
+    } else if (userLoc) {
+        // Fallback to linear calculation
         const dist = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
         eta = { distance:dist.toFixed(2), time:Math.round((dist/40)*60) };
     }
