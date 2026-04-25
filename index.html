@@ -1968,12 +1968,15 @@ function calcDist(la1,ln1,la2,ln2) {
 
 async function updateETA() {
     if (!userLoc) return;
-    // Linear distance as fallback
-    const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
-    const timeLinear = Math.round((distLinear/40)*60);
-    document.getElementById('etaBox').style.display = 'block';
-    document.getElementById('etaTime').textContent = timeLinear;
-    document.getElementById('etaDist').textContent = `📍 ${distLinear.toFixed(2)} km del restaurante`;
+
+    // Only show linear if Google Maps hasn't responded yet
+    if (!googleETA) {
+        const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
+        const timeLinear = Math.round((distLinear/40)*60);
+        document.getElementById('etaBox').style.display = 'block';
+        document.getElementById('etaTime').textContent = timeLinear;
+        document.getElementById('etaDist').textContent = `📍 ${distLinear.toFixed(2)} km del restaurante`;
+    }
 
     // Try Google Distance Matrix for real route
     try {
