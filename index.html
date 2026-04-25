@@ -2188,11 +2188,18 @@ window.addEventListener('load', () => {
             const { username, restId, user: u } = JSON.parse(savedSession);
             RID = restId;
             currentUser = { username, ...u };
-            document.getElementById('userChip').textContent = `👤 ${u.name}`;
-            showApp();
-            setupNav();
-            startListeners();
-            loadSettings();
+            setTimeout(() => {
+                try {
+                    document.getElementById('userChip').textContent = `👤 ${u.name}`;
+                    showApp();
+                    setupNav();
+                    startListeners();
+                    loadSettings();
+                } catch(e2) {
+                    localStorage.removeItem('eta_session');
+                    showInitial();
+                }
+            }, 100);
         } catch(e) {
             localStorage.removeItem('eta_session');
         }
