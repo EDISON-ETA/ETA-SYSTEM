@@ -878,11 +878,14 @@ async function loadRestaurantsList() {
         if (snap.exists()) {
             snap.forEach(child => {
                 const key = child.key;
-                if (key === '_superadmin' || key === 'demo-restaurant') return;
+                // Skip system keys and invalid entries
+                if (!key || key === 'null' || key === '_superadmin' || key === 'demo-restaurant') return;
                 const val = child.val();
+                if (!val || typeof val !== 'object') return;
                 // Get info from settings if available
                 const settings = val.settings || {};
                 const users = val.users || {};
+                if (!settings.name && Object.keys(users).length === 0) return; // Skip empty entries
                 const adminUser = Object.entries(users).find(([u,d]) => d.role === 'admin');
                 rests.push({
                     id: key,
@@ -2255,12 +2258,14 @@ window.addEventListener('load', () => {
                         startListeners();
                         loadSettings();
                     } catch(e2) {
-                        deleteCookie('eta_session');
+                        console.error('Session restore error:', e2.message);
+                        // Don't delete cookie on error - just show initial
                         showInitial();
                     }
                 }, 100);
             }
         } catch(e) {
+            console.error('Cookie parse error:', e.message);
             deleteCookie('eta_session');
         }
         return;
