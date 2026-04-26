@@ -2062,6 +2062,14 @@ function sendOrder() {
         notify('✅ Pedido enviado al restaurante');
         renderGuideMenu();
         showOrderSummary(selected);
+        // Disable send button again
+        const sendBtn = document.querySelector('button[onclick="sendOrder()"]') ||
+                        document.querySelector('.btn-success.btn-full.btn-lg');
+        if (sendBtn) {
+            sendBtn.disabled = true;
+            sendBtn.style.background = '#6b7280';
+            sendBtn.innerHTML = '🔒 Pedido enviado — en preparación';
+        }
     });
 }
 
@@ -2147,13 +2155,20 @@ function checkEditEnabled() {
             if (btn) btn.style.display = 'none';
             // Reload menu after short delay
             setTimeout(() => {
+                // Restore menu with previous quantities
                 renderGuideMenu();
-                const sendBtn = document.querySelector('.btn-success.btn-full.btn-lg');
+                // Restore the menu container to editable state
+                const menuCard = document.querySelector('#guideMenuList');
+                if (menuCard) menuCard.style.pointerEvents = 'auto';
+                // Re-enable send button
+                const sendBtn = document.querySelector('button[onclick="sendOrder()"]') || 
+                                document.querySelector('.btn-success.btn-full.btn-lg');
                 if (sendBtn) {
                     sendBtn.disabled = false;
-                    sendBtn.style.background = '';
+                    sendBtn.style.background = '#059669';
                     sendBtn.style.cursor = 'pointer';
                     sendBtn.innerHTML = '📤 Enviar Pedido Modificado';
+                    sendBtn.style.display = 'block';
                 }
                 document.getElementById('editEnabledMsg').style.display = 'none';
                 notify('✅ Ya puedes modificar tu pedido');
@@ -2271,6 +2286,28 @@ function startChatListener(key) {
 }
 function stopChatListener() {
     if (chatPollInterval) { clearInterval(chatPollInterval); chatPollInterval = null; }
+    if (window.badgePollInterval) { clearInterval(window.badgePollInterval); window.badgePollInterval = null; }
+}
+
+function startBadgePolling() {
+    if (window.badgePollInterval) clearInterval(window.badgePollInterval);
+    window.badgePollInterval = setInterval(() => {
+        if (!chatOrderKey || chatOpen) return;
+        const url = `${DB_URL}/restaurantes/${RID}/chat/${chatOrderKey}.json`;
+        fetch(url).then(r => r.json()).then(data => {
+            if (!data || typeof data !== 'object' || data.error) return;
+            const isGuide = !currentUser;
+            let unread = 0;
+            Object.values(data).forEach(m => {
+                if (m && !m.read && m.from !== (isGuide ? 'guide' : currentUser?.username)) unread++;
+            });
+            const badge = document.getElementById('chatBadge');
+            if (badge) {
+                badge.textContent = unread > 0 ? unread : '';
+                badge.style.display = unread > 0 ? 'flex' : 'none';
+            }
+        }).catch(() => {});
+    }, 4000);
 }
 async function sendChat() {
     const input = document.getElementById('chatInput');
