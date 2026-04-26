@@ -696,6 +696,7 @@ firebase.initializeApp({
 const db = firebase.database();
 let RID = null;
 let googleETA = null; // Stores real ETA from Google Maps
+let orderLocked = false; // True after order is sent
 const R = path => db.ref(`restaurantes/${RID}/${path}`);
 const SUPER_ADMIN_REF = path => db.ref(`restaurantes/_superadmin/${path}`);
 const DB_URL = 'https://eta-system-21b43-default-rtdb.firebaseio.com';
@@ -770,6 +771,7 @@ function doLogin() {
     const SA_USER = 'superadmin';
     const SA_PASS = 'eta2026admin';
     if (user === SA_USER && pass === SA_PASS) {
+        setCookie('eta_session', { isSuperAdmin: true });
         showSuperAdmin();
         return;
     }
@@ -826,7 +828,7 @@ function loginToRestaurant(user, pass, restId) {
             RID = restId;
             currentUser = { username: user, ...u };
             // Save session to localStorage
-            localStorage.setItem('eta_session', JSON.stringify({ username: user, restId, user: u }));
+            setCookie('eta_session', { username: user, restId, user: u });
             document.getElementById('userChip').textContent = `👤 ${u.name}`;
             showApp();
             setupNav();
@@ -873,6 +875,7 @@ function enterAsRestaurant(restId) {
 }
 
 function superAdminLogout() {
+    deleteCookie('eta_session');
     document.getElementById('screenSuperAdmin').style.display = 'none';
     showInitial();
 }
@@ -1069,8 +1072,8 @@ function doLogout() {
     document.getElementById('chatWindow').classList.remove('open');
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
-    localStorage.removeItem('eta_session');
-    localStorage.removeItem('eta_guide_session');
+    deleteCookie('eta_session');
+    // Guide session already not persisted
     showInitial();
     notify('Sesión cerrada');
 }
@@ -1829,8 +1832,7 @@ function doGuideAccessWithCode(code) {
         document.getElementById('paxDisplay').textContent = guidePax;
         document.getElementById('guideWelcome').textContent = `${cData.groupName||'Grupo'} · ${code}`;
         chatOrderKey = code;
-        // Save guide session
-        localStorage.setItem('eta_guide_session', JSON.stringify({ code, restId: RID }));
+        // Guide session is NOT persisted - expires when browser closes
 
         // Load settings for restaurant location
         R('settings').once('value', snap => {
@@ -1882,6 +1884,7 @@ function doGuideAccessWithCode(code) {
 
 function doGuideLogout() {
     if (!confirm('¿Cerrar sesión?')) return;
+    orderLocked = false;
     guideCode = null; guideMenu = [];
     if (gpsWatch) navigator.geolocation.clearWatch(gpsWatch);
     R('chat').off();
@@ -1890,8 +1893,8 @@ function doGuideLogout() {
     document.getElementById('chatWindow').classList.remove('open');
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
-    localStorage.removeItem('eta_guide_session');
-    localStorage.removeItem('eta_session');
+    // Guide session already not persisted
+    deleteCookie('eta_session');
     showInitial();
 }
 
@@ -2002,6 +2005,7 @@ async function updateETA() {
 
 // ===== ENVIAR PEDIDO =====
 function sendOrder() {
+    if (orderLocked) { notify('⚠️ Ya enviaste el pedido. Usa el chat para modificaciones.', 'error'); return; }
     const selected = guideMenu.filter(d => d.qty>0);
     if (!selected.length) { notify('Selecciona al menos un plato','error'); return; }
 
@@ -2023,10 +2027,45 @@ function sendOrder() {
         dishes: selected.map(d => ({ id:d.key, name:d.name, qty:d.qty, category:d.category||'General' })),
         eta, location:userLoc, createdAt:Date.now(), served:false
     }).then(() => {
+        orderLocked = true;
         notify('✅ Pedido enviado al restaurante');
-        guideMenu.forEach(d => d.qty=0);
         renderGuideMenu();
+        showOrderSummary(selected);
     });
+}
+
+function showOrderSummary(selected) {
+    const btn = document.querySelector('.btn-success.btn-full.btn-lg');
+    if (btn) {
+        btn.disabled = true;
+        btn.style.background = '#6b7280';
+        btn.style.cursor = 'not-allowed';
+        btn.innerHTML = '🔒 Pedido enviado — en preparación';
+    }
+    // Show what was ordered as locked summary
+    const menuList = document.getElementById('guideMenuList');
+    if (menuList) {
+        const summary = selected.map(d => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #e5e7eb;">
+                <span style="font-weight:600;">${d.name}</span>
+                <span style="background:#4f46e5;color:white;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:700;">${d.qty}x</span>
+            </div>`).join('');
+        menuList.innerHTML = `
+            <div style="padding:16px;">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;background:#d1fae5;padding:12px;border-radius:8px;">
+                    <span style="font-size:20px;">✅</span>
+                    <div>
+                        <div style="font-weight:700;color:#065f46;">Pedido confirmado</div>
+                        <div style="font-size:12px;color:#059669;">El restaurante ya lo recibió y está preparando</div>
+                    </div>
+                </div>
+                <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:12px;">Tu pedido:</p>
+                ${summary}
+                <div style="margin-top:16px;padding:12px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e;">
+                    ⚠️ Si necesitas modificar el pedido, comunícate con el restaurante por el chat.
+                </div>
+            </div>`;
+    }
 }
 
 // ===== CHAT =====
@@ -2178,45 +2217,54 @@ document.addEventListener('click', e => {
 });
 
 // ===== INIT =====
+// ===== COOKIE HELPERS =====
+function setCookie(name, value, days=30) {
+    const expires = new Date(Date.now() + days*864e5).toUTCString();
+    document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};expires=${expires};path=/;SameSite=Lax`;
+}
+function getCookie(name) {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    if (!match) return null;
+    try { return JSON.parse(decodeURIComponent(match[2])); } catch(e) { return null; }
+}
+function deleteCookie(name) {
+    document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+}
+
 window.addEventListener('load', () => {
     // Restore session if exists
-    const savedSession = localStorage.getItem('eta_session');
-    const savedGuideSession = localStorage.getItem('eta_guide_session');
+    const savedSession = getCookie('eta_session');
+    const savedGuideSession = getCookie('eta_guide_session');
 
     if (savedSession) {
         try {
-            const { username, restId, user: u } = JSON.parse(savedSession);
-            RID = restId;
-            currentUser = { username, ...u };
-            setTimeout(() => {
-                try {
-                    document.getElementById('userChip').textContent = `👤 ${u.name}`;
-                    showApp();
-                    setupNav();
-                    startListeners();
-                    loadSettings();
-                } catch(e2) {
-                    localStorage.removeItem('eta_session');
-                    showInitial();
-                }
-            }, 100);
+            const sessionData = savedSession;
+            if (sessionData.isSuperAdmin) {
+                setTimeout(() => showSuperAdmin(), 100);
+            } else {
+                const { username, restId, user: u } = sessionData;
+                RID = restId;
+                currentUser = { username, ...u };
+                setTimeout(() => {
+                    try {
+                        document.getElementById('userChip').textContent = `👤 ${u.name}`;
+                        showApp();
+                        setupNav();
+                        startListeners();
+                        loadSettings();
+                    } catch(e2) {
+                        deleteCookie('eta_session');
+                        showInitial();
+                    }
+                }, 100);
+            }
         } catch(e) {
-            localStorage.removeItem('eta_session');
+            deleteCookie('eta_session');
         }
         return;
     }
 
-    if (savedGuideSession) {
-        try {
-            const gs = JSON.parse(savedGuideSession);
-            document.getElementById('guideCodeInput').value = gs.code;
-            showGuide();
-            doGuideAccess();
-        } catch(e) {
-            localStorage.removeItem('eta_guide_session');
-        }
-        return;
-    }
+    // Guide session intentionally not restored - guide must enter code each time
 
     // Menu starts empty - restaurant creates their own dishes
     // Ensure default users exist
