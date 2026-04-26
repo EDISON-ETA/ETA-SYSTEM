@@ -734,6 +734,11 @@ function showLogin() {
     document.getElementById('screenLogin').style.display = 'flex';
 }
 function showGuide() {
+    // Always clear session when entering as guide - security measure
+    deleteCookie('eta_session');
+    sessionStorage.removeItem('eta_session');
+    currentUser = null;
+    RID = null;
     document.getElementById('screenInitial').style.display = 'none';
     document.getElementById('screenGuide').style.display = 'flex';
 }
@@ -1059,6 +1064,8 @@ function doLogout() {
     chatOpen = false;
     chatOrderKey = null;
     document.getElementById('chatWindow').classList.remove('open');
+    const chatContainer = document.getElementById('chatWindowContainer');
+    if (chatContainer) chatContainer.style.display = 'none';
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
     deleteCookie('eta_session');
@@ -1223,6 +1230,7 @@ function renderReception() {
                     ${proxBadge(o.eta)}
                     <button style="position:relative;background:var(--brand);color:white;border:none;border-radius:10px;padding:8px 14px;font-size:20px;cursor:pointer;display:flex;align-items:center;gap:6px;" id="chatBtn-${o.accessCode||o.key}" onclick="openChat('${o.accessCode||o.key}','${o.groupName||'Grupo'}')">💬<span style="font-size:13px;font-weight:600;">Chat</span><span id="unread-${o.accessCode||o.key}" style="display:none;position:absolute;top:-8px;right:-8px;background:#ef4444;color:white;border-radius:50%;min-width:20px;height:20px;font-size:11px;font-weight:800;align-items:center;justify-content:center;border:2px solid white;">0</span></button>
                     <button class="btn btn-success btn-sm" onclick="markServed('${o.key}','${o.accessCode||''}')">✅ Servido</button>
+                        <button class="btn btn-sm" style="background:#f59e0b;color:white;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;" onclick="enableOrderEdit('${o.key}','${o.accessCode||''}')">🔓 Habilitar edición</button>
                 </div>
             </div>
             <div class="order-card-body">
@@ -1294,6 +1302,24 @@ function renderService() {
 }
 
 // ===== MARK SERVED =====
+function enableOrderEdit(orderKey, accessCode) {
+    if (!confirm('¿Habilitar al guía para modificar este pedido?')) return;
+    // Set edit flag in Firebase
+    R(`orders/${orderKey}/editEnabled`).set(true).then(() => {
+        // Send automatic chat message to guide
+        const msg = {
+            text: '✏️ El restaurante ha habilitado la edición de tu pedido. Puedes modificarlo ahora.',
+            ts: Date.now(),
+            read: false,
+            from: 'restaurant',
+            fromName: 'Recepción'
+        };
+        const url = `${DB_URL}/restaurantes/${RID}/chat/${accessCode}.json`;
+        fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(msg) });
+        notify('✅ Edición habilitada — el guía fue notificado por chat');
+    }).catch(e => notify('Error: ' + e.message, 'error'));
+}
+
 function markServed(orderKey, accessCode) {
     if (!confirm('¿Marcar este pedido como servido?')) return;
     R(`orders/${orderKey}`).update({ served:true, servedAt:Date.now() }).then(() => {
@@ -1894,6 +1920,8 @@ function doGuideLogout() {
     chatOpen = false;
     chatOrderKey = null;
     document.getElementById('chatWindow').classList.remove('open');
+    const chatContainer = document.getElementById('chatWindowContainer');
+    if (chatContainer) chatContainer.style.display = 'none';
     document.getElementById('chatBadge').style.display = 'none';
     stopChatListener();
     // Guide session already not persisted
@@ -2065,13 +2093,78 @@ function showOrderSummary(selected) {
                 <p style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:12px;">Tu pedido:</p>
                 ${summary}
                 <div style="margin-top:16px;padding:12px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e;">
-                    ⚠️ Si necesitas modificar el pedido, comunícate con el restaurante por el chat.
+                    ⚠️ Si necesitas modificar el pedido, solicita al restaurante que habilite la edición.
+                </div>
+                <button onclick="requestOrderEdit()" id="requestEditBtn" style="width:100%;margin-top:12px;padding:12px;background:#f59e0b;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">
+                    ✏️ Solicitar modificación
+                </button>
+                <div id="editEnabledMsg" style="display:none;margin-top:12px;padding:12px;background:#d1fae5;border-radius:8px;font-size:13px;color:#065f46;font-weight:600;text-align:center;">
+                    ✅ Edición habilitada por el restaurante
                 </div>
             </div>`;
     }
 }
 
 // ===== CHAT =====
+function requestOrderEdit() {
+    if (!guideCode) return;
+    const msg = {
+        text: '✏️ El guía solicita modificar el pedido. Por favor habilita la edición desde Recepción.',
+        ts: Date.now(),
+        read: false,
+        from: 'guide',
+        fromName: guideCode.groupName || 'Guía'
+    };
+    const url = `${DB_URL}/restaurantes/${RID}/chat/${guideCode.code}.json`;
+    fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(msg) })
+        .then(() => {
+            const btn = document.getElementById('requestEditBtn');
+            if (btn) { btn.disabled = true; btn.textContent = '⏳ Solicitud enviada — esperando respuesta'; btn.style.background = '#9ca3af'; }
+            notify('✅ Solicitud enviada al restaurante');
+            // Start polling for edit enabled
+            checkEditEnabled();
+        });
+}
+
+function checkEditEnabled() {
+    if (!guideCode) return;
+    R('orders').orderByChild('accessCode').equalTo(guideCode.code).once('value', snap => {
+        if (!snap.exists()) return;
+        let editEnabled = false;
+        let orderKey = null;
+        snap.forEach(o => { 
+            if (!o.val().served && o.val().editEnabled) { 
+                editEnabled = true; 
+                orderKey = o.key;
+            } 
+        });
+        if (editEnabled) {
+            // Unlock the order
+            orderLocked = false;
+            R(`orders/${orderKey}/editEnabled`).remove();
+            document.getElementById('editEnabledMsg').style.display = 'block';
+            const btn = document.getElementById('requestEditBtn');
+            if (btn) btn.style.display = 'none';
+            // Reload menu after short delay
+            setTimeout(() => {
+                renderGuideMenu();
+                const sendBtn = document.querySelector('.btn-success.btn-full.btn-lg');
+                if (sendBtn) {
+                    sendBtn.disabled = false;
+                    sendBtn.style.background = '';
+                    sendBtn.style.cursor = 'pointer';
+                    sendBtn.innerHTML = '📤 Enviar Pedido Modificado';
+                }
+                document.getElementById('editEnabledMsg').style.display = 'none';
+                notify('✅ Ya puedes modificar tu pedido');
+            }, 1500);
+        } else {
+            // Keep polling every 5 seconds
+            setTimeout(checkEditEnabled, 5000);
+        }
+    });
+}
+
 function openGuideChat() {
     if (!guideCode) return;
     chatOrderKey = guideCode.code || guideCode.key;
@@ -2266,21 +2359,33 @@ window.addEventListener('load', () => {
                 setTimeout(() => showSuperAdmin(), 100);
             } else {
                 const { username, restId, user: u } = sessionData;
-                RID = restId;
-                currentUser = { username, ...u };
-                setTimeout(() => {
-                    try {
-                        document.getElementById('userChip').textContent = `👤 ${u.name}`;
-                        showApp();
-                        setupNav();
-                        startListeners();
-                        loadSettings();
-                    } catch(e2) {
-                        console.error('Session restore error:', e2.message);
-                        // Don't delete cookie on error - just show initial
+                // Validate session against Firebase before restoring
+                db.ref(`restaurantes/${restId}/users/${username}`).get().then(snap => {
+                    if (snap.exists() && snap.val().password === u.password) {
+                        RID = restId;
+                        currentUser = { username, ...u };
+                        setTimeout(() => {
+                            try {
+                                document.getElementById('userChip').textContent = `👤 ${u.name}`;
+                                showApp();
+                                setupNav();
+                                startListeners();
+                                loadSettings();
+                            } catch(e2) {
+                                console.error('Session restore error:', e2.message);
+                                deleteCookie('eta_session');
+                                showInitial();
+                            }
+                        }, 100);
+                    } else {
+                        // Invalid session - clear and show initial
+                        deleteCookie('eta_session');
                         showInitial();
                     }
-                }, 100);
+                }).catch(() => {
+                    deleteCookie('eta_session');
+                    showInitial();
+                });
             }
         } catch(e) {
             console.error('Cookie parse error:', e.message);
