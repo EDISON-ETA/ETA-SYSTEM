@@ -829,6 +829,7 @@ function loginToRestaurant(user, pass, restId) {
             currentUser = { username: user, ...u };
             // Save session to localStorage
             setCookie('eta_session', { username: user, restId, user: u });
+            console.log('🍪 Session saved for:', user, restId);
             document.getElementById('userChip').textContent = `👤 ${u.name}`;
             showApp();
             setupNav();
@@ -1850,10 +1851,24 @@ function doGuideAccessWithCode(code) {
         } else {
             guideMenu = [];
         }
-        renderGuideMenu();
-
-        showGuideApp();
-        activateGPS();
+        // Check if order already sent for this code
+        R('orders').orderByChild('accessCode').equalTo(code).once('value', orderSnap => {
+            if (orderSnap.exists()) {
+                let lastOrder = null;
+                orderSnap.forEach(o => { if (!o.val().served) lastOrder = o.val(); });
+                if (lastOrder) {
+                    orderLocked = true;
+                    showGuideApp();
+                    activateGPS();
+                    setTimeout(() => showOrderSummary(lastOrder.dishes || []), 300);
+                    return;
+                }
+            }
+            orderLocked = false;
+            renderGuideMenu();
+            showGuideApp();
+            activateGPS();
+        });
         notify(`¡Bienvenido, ${cData.groupName||'Guía'}!`);
 
         // Start polling for guide chat
@@ -2235,6 +2250,8 @@ window.addEventListener('load', () => {
     // Restore session if exists
     const savedSession = getCookie('eta_session');
     const savedGuideSession = getCookie('eta_guide_session');
+    console.log('🍪 Cookie eta_session:', savedSession);
+    console.log('🍪 document.cookie:', document.cookie);
 
     if (savedSession) {
         try {
