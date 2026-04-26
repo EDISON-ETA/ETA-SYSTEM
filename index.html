@@ -2257,8 +2257,9 @@ window.addEventListener('load', () => {
     // Restore session if exists
     // Async session restore
     getCookie('eta_session').then(savedSession => {
-    console.log('Session found:', savedSession);
+    console.log('SESSION RESTORE CHECK:', JSON.stringify(savedSession));
     if (savedSession) {
+        console.log('RESTORING SESSION...');
         try {
             const sessionData = savedSession;
             if (sessionData.isSuperAdmin) {
