@@ -532,7 +532,7 @@
             <div class="card-header"><h3>🍴 Selecciona los Platos</h3></div>
             <div class="card-body" id="guideMenuList"></div>
         </div>
-        <button class="btn btn-success btn-full btn-lg" onclick="sendOrder()" style="margin-bottom:12px;">
+        <button id="guideSendBtn" class="btn btn-success btn-full btn-lg" onclick="sendOrder()" style="margin-bottom:12px;">
             📤 Enviar Pedido al Restaurante
         </button>
         <button class="btn btn-ghost btn-full" onclick="openGuideChat()" style="margin-bottom:80px;background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.3);">
@@ -1986,6 +1986,9 @@ function activateGPS() {
                 updateETA();
             }, null, { enableHighAccuracy:true, timeout:10000, maximumAge:5000 });
             notify('📍 GPS activado');
+            // Sync ETA to restaurant every 30 seconds
+            if (window.etaSyncInterval) clearInterval(window.etaSyncInterval);
+            window.etaSyncInterval = setInterval(syncETAToRestaurant, 30000);
         },
         err => {
             btn.textContent = 'Reintentar GPS'; btn.disabled = false;
@@ -2003,14 +2006,20 @@ function calcDist(la1,ln1,la2,ln2) {
 async function updateETA() {
     if (!userLoc) return;
 
-    // Only show linear if Google Maps hasn't responded yet
-    if (!googleETA) {
-        const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
-        const timeLinear = Math.round((distLinear/40)*60);
+    // If Google Maps already responded, just update display with stored value
+    if (googleETA) {
         document.getElementById('etaBox').style.display = 'block';
-        document.getElementById('etaTime').textContent = timeLinear;
-        document.getElementById('etaDist').textContent = `📍 ${distLinear.toFixed(2)} km del restaurante`;
+        document.getElementById('etaTime').textContent = googleETA.time;
+        document.getElementById('etaDist').textContent = `📍 ${googleETA.distance} km por carretera`;
+        return; // Don't recalculate - prevents fluctuation
     }
+
+    // Show linear only while waiting for Google Maps first response
+    const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
+    const timeLinear = Math.round((distLinear/40)*60);
+    document.getElementById('etaBox').style.display = 'block';
+    document.getElementById('etaTime').textContent = timeLinear;
+    document.getElementById('etaDist').textContent = `📍 Calculando ruta...`;
 
     // Try Google Distance Matrix for real route
     try {
@@ -2024,14 +2033,33 @@ async function updateETA() {
             const el = data.rows[0].elements[0];
             const distText = el.distance.text;
             const durationMins = Math.round(el.duration.value / 60);
+            // Store permanently - no more fluctuation
+            googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
             document.getElementById('etaTime').textContent = durationMins;
             document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
-            // Store real ETA for use when sending order
-            googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins };
         }
     } catch(e) {
-        // Fallback to linear already shown above
+        // Keep linear shown above as fallback
     }
+}
+
+// Update ETA on Firebase for active orders (called every 30 seconds)
+async function syncETAToRestaurant() {
+    if (!guideCode || !googleETA || !RID) return;
+    try {
+        // Find active order for this code and update its ETA
+        const snap = await db.ref(`restaurantes/${RID}/orders`).orderByChild('accessCode').equalTo(guideCode.code).get();
+        if (!snap.exists()) return;
+        snap.forEach(child => {
+            if (!child.val().served) {
+                db.ref(`restaurantes/${RID}/orders/${child.key}/eta`).set({
+                    distance: googleETA.distance,
+                    time: googleETA.time
+                });
+                db.ref(`restaurantes/${RID}/orders/${child.key}/location`).set(userLoc);
+            }
+        });
+    } catch(e) {}
 }
 
 // ===== ENVIAR PEDIDO =====
@@ -2147,30 +2175,27 @@ function checkEditEnabled() {
             } 
         });
         if (editEnabled) {
-            // Unlock the order
             orderLocked = false;
             R(`orders/${orderKey}/editEnabled`).remove();
-            document.getElementById('editEnabledMsg').style.display = 'block';
-            const btn = document.getElementById('requestEditBtn');
-            if (btn) btn.style.display = 'none';
-            // Reload menu after short delay
+            // Reset menu quantities
+            guideMenu.forEach(d => d.qty = 0);
+            // Show guide body and menu
+            const guideBody = document.querySelector('.guide-body');
+            if (guideBody) guideBody.style.display = 'block';
+            // Re-render menu
+            renderGuideMenu();
+            // Re-enable send button
             setTimeout(() => {
-                // Restore menu with previous quantities
-                renderGuideMenu();
-                // Restore the menu container to editable state
-                const menuCard = document.querySelector('#guideMenuList');
-                if (menuCard) menuCard.style.pointerEvents = 'auto';
-                // Re-enable send button
-                const sendBtn = document.querySelector('button[onclick="sendOrder()"]') || 
-                                document.querySelector('.btn-success.btn-full.btn-lg');
+                const sendBtn = document.getElementById('guideSendBtn') ||
+                                document.querySelector('button[onclick="sendOrder()"]');
                 if (sendBtn) {
                     sendBtn.disabled = false;
                     sendBtn.style.background = '#059669';
                     sendBtn.style.cursor = 'pointer';
                     sendBtn.innerHTML = '📤 Enviar Pedido Modificado';
                     sendBtn.style.display = 'block';
+                    sendBtn.style.opacity = '1';
                 }
-                document.getElementById('editEnabledMsg').style.display = 'none';
                 notify('✅ Ya puedes modificar tu pedido');
             }, 1500);
         } else {
