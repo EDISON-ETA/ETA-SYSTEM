@@ -796,21 +796,14 @@ function doLogin() {
 }
 
 function loginToRestaurant(user, pass, restId) {
-    // First check if restaurant is suspended
-    db.ref('restaurantes/_superadmin/restaurants').orderByKey().once('value', regSnap => {
-        if (regSnap.exists()) {
-            let isSuspended = false;
-            regSnap.forEach(child => {
-                if (child.key === restId && child.val().suspended) isSuspended = true;
-            });
-            if (isSuspended) {
-                notify('⛔ Esta cuenta está suspendida. Contacta al soporte.', 'error');
-                return;
-            }
+    // Check suspended directly from restaurant node - faster and more reliable
+    db.ref(`restaurantes/${restId}/suspended`).get().then(snap => {
+        if (snap.exists() && snap.val() === true) {
+            notify('⛔ Esta cuenta está suspendida. Contacta al soporte.', 'error');
+            return;
         }
-        // Proceed with normal login
         proceedLogin(user, pass, restId);
-    });
+    }).catch(() => proceedLogin(user, pass, restId));
 }
 
 function proceedLogin(user, pass, restId) {
@@ -915,7 +908,7 @@ async function loadRestaurantsList() {
                     name: settings.name || key,
                     city: settings.city || '',
                     adminUser: adminUser ? adminUser[0] : '-',
-                    suspended: val.suspended || false
+                    suspended: val.suspended === true
                 });
             });
         }
@@ -1058,7 +1051,11 @@ function showRestCredentials(name, user, pass, restId, phone) {
 function toggleRestaurant(restId, suspend) {
     const action = suspend ? 'suspender' : 'activar';
     if (!confirm(`¿${action.charAt(0).toUpperCase()+action.slice(1)} este restaurante?`)) return;
-    SUPER_ADMIN_REF(`restaurants/${restId}/suspended`).set(suspend).then(() => {
+    // Save in both _superadmin and in the restaurant node directly
+    Promise.all([
+        SUPER_ADMIN_REF(`restaurants/${restId}/suspended`).set(suspend),
+        db.ref(`restaurantes/${restId}/suspended`).set(suspend)
+    ]).then(() => {
         loadRestaurantsList();
         notify(suspend ? '⏸️ Restaurante suspendido' : '✅ Restaurante activado');
     });
@@ -2083,10 +2080,21 @@ async function syncETAToRestaurant() {
 }
 
 // ===== ENVIAR PEDIDO =====
-function sendOrder() {
+async function sendOrder() {
     if (orderLocked) { notify('⚠️ Ya enviaste el pedido. Usa el chat para modificaciones.', 'error'); return; }
     const selected = guideMenu.filter(d => d.qty>0);
     if (!selected.length) { notify('Selecciona al menos un plato','error'); return; }
+    // Double-check Firebase - prevent duplicate orders
+    const existingSnap = await R('orders').orderByChild('accessCode').equalTo(guideCode.code).get();
+    if (existingSnap.exists()) {
+        let hasActive = false;
+        existingSnap.forEach(o => { if (!o.val().served) hasActive = true; });
+        if (hasActive) {
+            orderLocked = true;
+            notify('⚠️ Ya existe un pedido activo para este grupo.', 'error');
+            return;
+        }
+    }
 
     let eta = null;
     if (googleETA) {
