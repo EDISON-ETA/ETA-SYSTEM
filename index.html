@@ -1988,7 +1988,7 @@ function activateGPS() {
             notify('📍 GPS activado');
             // Sync ETA to restaurant every 30 seconds
             if (window.etaSyncInterval) clearInterval(window.etaSyncInterval);
-            window.etaSyncInterval = setInterval(syncETAToRestaurant, 30000);
+            window.etaSyncInterval = setInterval(syncETAToRestaurant, 15000);
         },
         err => {
             btn.textContent = 'Reintentar GPS'; btn.disabled = false;
@@ -2037,6 +2037,8 @@ async function updateETA() {
             googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
             document.getElementById('etaTime').textContent = durationMins;
             document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
+            // Immediately sync to restaurant panels
+            syncETAToRestaurant();
         }
     } catch(e) {
         // Keep linear shown above as fallback
