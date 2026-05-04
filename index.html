@@ -697,7 +697,7 @@ let restLoc = { lat: -0.1807, lng: -78.4678 };
 let chatOpen = false;
 let chatOrderKey = null;
 
-// Data caches — filled by Firebase listeners
+// Data caches - filled by Firebase listeners
 let dishesCache = {};   // key -> dish object
 let codesCache = {};    // key -> code object
 let ordersCache = {};   // key -> order object
@@ -1059,7 +1059,12 @@ function toggleRestaurant(restId, suspend) {
         db.ref(`restaurantes/${restId}/suspended`).set(suspend)
     ]).then(() => {
         setTimeout(() => loadRestaurantsList(), 1000);
-        notify(suspend ? '⏸️ Restaurante suspendido' : '✅ Restaurante activado'tion deleteRestaurant(restId, name) {
+        notify(suspend ? '⏸️ Restaurante suspendido' : '✅ Restaurante activado');
+        setTimeout(() => loadRestaurantsList(), 1000);
+    });
+}
+
+function deleteRestaurant(restId, name) {
     if (!confirm(`⚠️ ¿Eliminar permanentemente "${name}"? Se borrarán todos sus datos.`)) return;
     if (!confirm(`Esta acción NO se puede deshacer. ¿Confirmas eliminar "${name}"?`)) return;
     SUPER_ADMIN_REF(`restaurants/${restId}`).remove();
@@ -1650,11 +1655,8 @@ async function processForgotPassword() {
 
     // Open WhatsApp with pre-written message
     const msg = encodeURIComponent(
-        `Hola! Tu código temporal de acceso al Sistema ETA es: *${tempCode}*
-
-Úsalo para ingresar y cambia tu contraseña inmediatamente.
-Expira en 15 minutos.`
-    );
+        `Hola! Tu codigo temporal de acceso al Sistema ETA es: *${tempCode}*. Usalo para ingresar y cambia tu contrasena inmediatamente. Expira en 15 minutos.`
+    );;
     const waUrl = `https://wa.me/${foundPhone}?text=${msg}`;
 
     resultEl.innerHTML = `
