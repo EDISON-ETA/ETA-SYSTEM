@@ -2080,20 +2080,29 @@ async function syncETAToRestaurant() {
 }
 
 // ===== ENVIAR PEDIDO =====
-async function sendOrder() {
+function sendOrder() {
     if (orderLocked) { notify('⚠️ Ya enviaste el pedido. Usa el chat para modificaciones.', 'error'); return; }
     const selected = guideMenu.filter(d => d.qty>0);
     if (!selected.length) { notify('Selecciona al menos un plato','error'); return; }
-    // Double-check Firebase - prevent duplicate orders
-    const existingSnap = await R('orders').orderByChild('accessCode').equalTo(guideCode.code).get();
-    if (existingSnap.exists()) {
-        let hasActive = false;
-        existingSnap.forEach(o => { if (!o.val().served) hasActive = true; });
-        if (hasActive) {
-            orderLocked = true;
-            notify('⚠️ Ya existe un pedido activo para este grupo.', 'error');
-            return;
+    // Proceed directly - duplicate check was causing issues on mobile
+    doSendOrder(selected);
+}
+
+async function doSendOrder(selected) {
+    try {
+        // Double-check Firebase - prevent duplicate orders
+        const existingSnap = await R('orders').orderByChild('accessCode').equalTo(guideCode.code).get();
+        if (existingSnap.exists()) {
+            let hasActive = false;
+            existingSnap.forEach(o => { if (!o.val().served) hasActive = true; });
+            if (hasActive) {
+                orderLocked = true;
+                notify('⚠️ Ya existe un pedido activo para este grupo.', 'error');
+                return;
+            }
         }
+    } catch(e) {
+        // If Firebase check fails, proceed anyway to not block the guide
     }
 
     let eta = null;
