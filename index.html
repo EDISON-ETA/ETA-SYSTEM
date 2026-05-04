@@ -887,6 +887,8 @@ async function loadRestaurantsList() {
     el.innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:20px;">Cargando...</p>';
     try {
         // Read all restaurants directly from Firebase root
+        // Force fresh read - no cache
+        await db.ref('restaurantes').off();
         const snap = await db.ref('restaurantes').get();
         const rests = [];
         // Always show demo-restaurant first
@@ -1056,12 +1058,8 @@ function toggleRestaurant(restId, suspend) {
         SUPER_ADMIN_REF(`restaurants/${restId}/suspended`).set(suspend),
         db.ref(`restaurantes/${restId}/suspended`).set(suspend)
     ]).then(() => {
-        loadRestaurantsList();
-        notify(suspend ? '⏸️ Restaurante suspendido' : '✅ Restaurante activado');
-    });
-}
-
-function deleteRestaurant(restId, name) {
+        setTimeout(() => loadRestaurantsList(), 1000);
+        notify(suspend ? '⏸️ Restaurante suspendido' : '✅ Restaurante activado'tion deleteRestaurant(restId, name) {
     if (!confirm(`⚠️ ¿Eliminar permanentemente "${name}"? Se borrarán todos sus datos.`)) return;
     if (!confirm(`Esta acción NO se puede deshacer. ¿Confirmas eliminar "${name}"?`)) return;
     SUPER_ADMIN_REF(`restaurants/${restId}`).remove();
