@@ -1859,6 +1859,10 @@ function doGuideAccessWithCode(code) {
 
         guideCode = { key:cKey, ...cData };
         guidePax = cData.pax || 10;
+        // Reset state for new code entry
+        orderLocked = false;
+        googleETA = null;
+        if (window.etaSyncInterval) { clearInterval(window.etaSyncInterval); window.etaSyncInterval = null; }
         document.getElementById('paxDisplay').textContent = guidePax;
         document.getElementById('guideWelcome').textContent = `${cData.groupName||'Grupo'} · ${code}`;
         chatOrderKey = code;
