@@ -1859,10 +1859,24 @@ function doGuideAccessWithCode(code) {
 
         guideCode = { key:cKey, ...cData };
         guidePax = cData.pax || 10;
-        // Reset state for new code entry
+        // Reset ALL state for new code entry
         orderLocked = false;
         googleETA = null;
         if (window.etaSyncInterval) { clearInterval(window.etaSyncInterval); window.etaSyncInterval = null; }
+        // Reset DOM - clear any previous order summary
+        const menuList = document.getElementById('guideMenuList');
+        if (menuList) menuList.innerHTML = '';
+        const sendBtn = document.getElementById('guideSendBtn');
+        if (sendBtn) {
+            sendBtn.disabled = false;
+            sendBtn.style.background = '';
+            sendBtn.style.cursor = 'pointer';
+            sendBtn.innerHTML = '📤 Enviar Pedido al Restaurante';
+            sendBtn.style.display = 'block';
+            sendBtn.style.opacity = '1';
+        }
+        const requestEditBtn = document.getElementById('requestEditBtn');
+        if (requestEditBtn) requestEditBtn.style.display = 'none';
         document.getElementById('paxDisplay').textContent = guidePax;
         document.getElementById('guideWelcome').textContent = `${cData.groupName||'Grupo'} · ${code}`;
         chatOrderKey = code;
