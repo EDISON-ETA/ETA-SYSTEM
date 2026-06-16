@@ -2036,45 +2036,55 @@ function calcDist(la1,ln1,la2,ln2) {
     return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
+let etaLastCallAt = 0; // Throttle Google Maps API calls — max 1 call per 60s
+
 async function updateETA() {
     if (!userLoc) return;
 
-    // If Google Maps already responded, just update display with stored value
+    // Show current googleETA if available — never show linear estimate to avoid jarring jumps
+    // (linear distance vs real mountain road can differ 2x-3x in Imbabura terrain)
     if (googleETA) {
         document.getElementById('etaBox').style.display = 'block';
         document.getElementById('etaTime').textContent = googleETA.time;
         document.getElementById('etaDist').textContent = `📍 ${googleETA.distance} km por carretera`;
-        return; // Don't recalculate - prevents fluctuation
+    } else {
+        // Still waiting for first Google Maps response — show spinner, no number
+        document.getElementById('etaBox').style.display = 'block';
+        document.getElementById('etaTime').textContent = '--';
+        document.getElementById('etaDist').textContent = `📍 Calculando ruta real...`;
     }
 
-    // Show linear only while waiting for Google Maps first response
-    const distLinear = calcDist(userLoc.lat,userLoc.lng,restLoc.lat,restLoc.lng);
-    const timeLinear = Math.round((distLinear/40)*60);
-    document.getElementById('etaBox').style.display = 'block';
-    document.getElementById('etaTime').textContent = timeLinear;
-    document.getElementById('etaDist').textContent = `📍 Calculando ruta...`;
+    // Throttle: only call Google Maps API if 60 seconds have passed since last call
+    const now = Date.now();
+    if (now - etaLastCallAt < 60000) return;
+    etaLastCallAt = now;
 
-    // Try Google Distance Matrix for real route
-    try {
-        const origin = `${userLoc.lat},${userLoc.lng}`;
-        const dest = `${restLoc.lat},${restLoc.lng}`;
-        const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin}&destinations=${dest}&mode=driving&key=AIzaSyDVviMlLZELaZvjg45KFqHBDsCTZQBTiyw`;
-        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
-        const resp = await fetch(proxyUrl);
-        const data = await resp.json();
-        if (data.rows?.[0]?.elements?.[0]?.status === 'OK') {
-            const el = data.rows[0].elements[0];
-            const distText = el.distance.text;
-            const durationMins = Math.round(el.duration.value / 60);
-            // Store permanently - no more fluctuation
-            googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
-            document.getElementById('etaTime').textContent = durationMins;
-            document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
-            // Immediately sync to restaurant panels
-            syncETAToRestaurant();
+    // Call Google Distance Matrix — two proxies for redundancy
+    // If corsproxy.io fails, allorigins.win is tried automatically
+    const PROXIES = [
+        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
+    ];
+    const mapsUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${userLoc.lat},${userLoc.lng}&destinations=${restLoc.lat},${restLoc.lng}&mode=driving&key=AIzaSyDVviMlLZELaZvjg45KFqHBDsCTZQBTiyw`;
+
+    for (const buildProxy of PROXIES) {
+        try {
+            const resp = await fetch(buildProxy(mapsUrl), { signal: AbortSignal.timeout(8000) });
+            const data = await resp.json();
+            if (data.rows?.[0]?.elements?.[0]?.status === 'OK') {
+                const el = data.rows[0].elements[0];
+                const distText = el.distance.text;
+                const durationMins = Math.round(el.duration.value / 60);
+                googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
+                document.getElementById('etaTime').textContent = durationMins;
+                document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
+                // Sync updated ETA to restaurant panels immediately
+                syncETAToRestaurant();
+                break; // Success — no need to try second proxy
+            }
+        } catch(e) {
+            // This proxy failed — loop continues to next proxy automatically
         }
-    } catch(e) {
-        // Keep linear shown above as fallback
     }
 }
 
@@ -2089,7 +2099,8 @@ async function syncETAToRestaurant() {
             if (!child.val().served) {
                 db.ref(`restaurantes/${RID}/orders/${child.key}/eta`).set({
                     distance: googleETA.distance,
-                    time: googleETA.time
+                    time: googleETA.time,
+                    etaUpdatedAt: Date.now()
                 });
                 db.ref(`restaurantes/${RID}/orders/${child.key}/location`).set(userLoc);
             }
