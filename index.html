@@ -2443,8 +2443,13 @@ document.addEventListener('click', e => {
 // ===== INIT =====
 // ===== SESSION HELPERS (using sessionStorage + Firebase) =====
 function getDeviceId() {
-    let id = sessionStorage.getItem('eta_device_id');
-    if (!id) { id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2); sessionStorage.setItem('eta_device_id', id); }
+    // Uses localStorage (not sessionStorage) so the ID survives closing the
+    // app/tab — this is what lets the Firebase-backed session be found again
+    // on reopen. Previously this used sessionStorage, which is cleared on
+    // close, so a new random ID was generated every time and the saved
+    // Firebase session could never be located again.
+    let id = localStorage.getItem('eta_device_id');
+    if (!id) { id = 'dev_' + Date.now() + '_' + Math.random().toString(36).slice(2); localStorage.setItem('eta_device_id', id); }
     return id;
 }
 async function setCookie(name, value) {
