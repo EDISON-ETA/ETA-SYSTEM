@@ -1118,6 +1118,11 @@ function groupByCategory(dishes) {
 function startListeners() {
     // Update chat badges every 5 seconds
     setInterval(() => { if (currentUser) updateReceptionBadges(); }, 5000);
+    // Re-render order views every 20 seconds so the "updated Xs ago" /
+    // stale-ETA warning ticks forward in real time, even if no new order
+    // data has arrived from Firebase (e.g. the guide's app stopped sending
+    // updates).
+    setInterval(() => { if (currentUser) refreshOrderViews(); }, 20000);
     // MENU listener
     R('menu').on('value', snap => {
         dishesCache = snap.val() || {};
@@ -1214,10 +1219,25 @@ function getActiveOrders() {
 function proxBadge(eta) {
     if (!eta) return `<span class="prox-far">📡 Sin GPS</span>`;
     const d = parseFloat(eta.distance);
-    if (d < 0.5) return `<span class="prox-arriving">🔴 LLEGANDO AHORA</span>`;
-    if (d < 1.5) return `<span class="prox-prepare">🟡 PREPARAR MESAS</span>`;
-    if (d < 4)   return `<span class="prox-coming">🔵 En camino</span>`;
-    return `<span class="prox-far">⏳ ${eta.time} min</span>`;
+    let badge;
+    if (d < 0.5) badge = `<span class="prox-arriving">🔴 LLEGANDO AHORA</span>`;
+    else if (d < 1.5) badge = `<span class="prox-prepare">🟡 PREPARAR MESAS</span>`;
+    else if (d < 4)   badge = `<span class="prox-coming">🔵 En camino</span>`;
+    else badge = `<span class="prox-far">⏳ ${eta.time} min</span>`;
+    // Staleness indicator: the ETA normally refreshes every 30s while the
+    // guide has the app open in the foreground. If it hasn't updated in a
+    // while (guide switched apps, lost signal, etc.), flag it clearly so
+    // kitchen/service don't act on a stale distance/time.
+    if (eta.etaUpdatedAt) {
+        const secsAgo = Math.floor((Date.now() - eta.etaUpdatedAt) / 1000);
+        if (secsAgo < 90) {
+            badge += ` <span style="font-size:11px;color:var(--gray-400);">· hace ${secsAgo}s</span>`;
+        } else {
+            const minsAgo = Math.floor(secsAgo / 60);
+            badge += ` <span style="font-size:11px;font-weight:700;color:#d97706;">⚠️ desactualizado (hace ${minsAgo} min)</span>`;
+        }
+    }
+    return badge;
 }
 
 // ===== RECEPCIÓN =====
