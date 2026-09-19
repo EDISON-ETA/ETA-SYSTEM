@@ -886,30 +886,27 @@ async function loadRestaurantsList() {
     const el = document.getElementById('restaurantsList');
     el.innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:20px;">Cargando...</p>';
     try {
-        // Read all restaurants directly from Firebase root
-        // Force fresh read - no cache
-        await db.ref('restaurantes').off();
-        const snap = await db.ref('restaurantes').get();
+        // Read from the maintained _superadmin/restaurants index instead of
+        // scanning the whole "restaurantes" node — reading the root directly
+        // is blocked by the security rules (by design, to prevent a full
+        // database dump), but this index is nested under a $restaurantId
+        // ("_superadmin") that the rules do allow reading.
+        await db.ref('restaurantes/_superadmin/restaurants').off();
+        const snap = await db.ref('restaurantes/_superadmin/restaurants').get();
         const rests = [];
         // Always show demo-restaurant first
         rests.push({ id: 'demo-restaurant', name: '🧪 Demo Restaurant (Pruebas)', city: 'Sistema', adminUser: 'admin', suspended: false });
         if (snap.exists()) {
             snap.forEach(child => {
                 const key = child.key;
-                // Skip system keys and invalid entries
-                if (!key || key === 'null' || key === '_superadmin' || key === 'demo-restaurant') return;
+                if (!key || key === 'null' || key === 'demo-restaurant') return;
                 const val = child.val();
                 if (!val || typeof val !== 'object') return;
-                // Get info from settings if available
-                const settings = val.settings || {};
-                const users = val.users || {};
-                if (!settings.name && Object.keys(users).length === 0) return; // Skip empty entries
-                const adminUser = Object.entries(users).find(([u,d]) => d.role === 'admin');
                 rests.push({
                     id: key,
-                    name: settings.name || key,
-                    city: settings.city || '',
-                    adminUser: adminUser ? adminUser[0] : '-',
+                    name: val.name || key,
+                    city: val.city || '',
+                    adminUser: val.adminUser || '-',
                     suspended: val.suspended === true
                 });
             });
