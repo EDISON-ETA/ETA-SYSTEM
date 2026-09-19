@@ -957,14 +957,16 @@ async function createRestaurant() {
     const phone = document.getElementById('newRestPhone').value.trim().replace(/[^0-9]/g,'');
     if (!name || !adminUser || !phone) { notify('Completa los campos obligatorios incluyendo WhatsApp', 'error'); return; }
 
-    // Verify username is not already taken
-    const allRests = await db.ref('restaurantes').get();
+    // Verify username is not already taken — checked against the
+    // _superadmin/restaurants index (which stores each restaurant's
+    // adminUser) instead of scanning the whole "restaurantes" node, since
+    // reading that root is blocked by the security rules by design.
+    const allRests = await db.ref('restaurantes/_superadmin/restaurants').get();
     if (allRests.exists()) {
         let userExists = false;
         allRests.forEach(child => {
-            if (child.key === '_superadmin') return;
-            const users = child.val().users || {};
-            if (users[adminUser]) userExists = true;
+            const v = child.val();
+            if (v && v.adminUser === adminUser) userExists = true;
         });
         if (userExists) {
             notify(`⚠️ El usuario "${adminUser}" ya está en uso. Elige otro nombre.`, 'error');
