@@ -2078,32 +2078,29 @@ async function updateETA() {
     if (now - etaLastCallAt < 60000) return;
     etaLastCallAt = now;
 
-    // Call Google Distance Matrix — two proxies for redundancy
-    // If corsproxy.io fails, allorigins.win is tried automatically
-    const PROXIES = [
-        u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-        u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`
-    ];
-    const mapsUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${userLoc.lat},${userLoc.lng}&destinations=${restLoc.lat},${restLoc.lng}&mode=driving&key=AIzaSyDVviMlLZELaZvjg45KFqHBDsCTZQBTiyw`;
+    // Call our own Cloudflare Worker, which holds the Google Maps API key
+    // server-side and calls Distance Matrix on our behalf. Replaces the two
+    // free public proxies (corsproxy.io / allorigins.win), which both
+    // stopped working (one now requires a paid key, the other returns
+    // server errors) — this is documented in the eta-go project notes.
+    const workerUrl = `https://eta-proxy.alexander07dc.workers.dev/?origins=${userLoc.lat},${userLoc.lng}&destinations=${restLoc.lat},${restLoc.lng}`;
 
-    for (const buildProxy of PROXIES) {
-        try {
-            const resp = await fetch(buildProxy(mapsUrl), { signal: AbortSignal.timeout(8000) });
-            const data = await resp.json();
-            if (data.rows?.[0]?.elements?.[0]?.status === 'OK') {
-                const el = data.rows[0].elements[0];
-                const distText = el.distance.text;
-                const durationMins = Math.round(el.duration.value / 60);
-                googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
-                document.getElementById('etaTime').textContent = durationMins;
-                document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
-                // Sync updated ETA to restaurant panels immediately
-                syncETAToRestaurant();
-                break; // Success — no need to try second proxy
-            }
-        } catch(e) {
-            // This proxy failed — loop continues to next proxy automatically
+    try {
+        const resp = await fetch(workerUrl, { signal: AbortSignal.timeout(8000) });
+        const data = await resp.json();
+        if (data.rows?.[0]?.elements?.[0]?.status === 'OK') {
+            const el = data.rows[0].elements[0];
+            const distText = el.distance.text;
+            const durationMins = Math.round(el.duration.value / 60);
+            googleETA = { distance: (el.distance.value/1000).toFixed(2), time: durationMins, distText };
+            document.getElementById('etaTime').textContent = durationMins;
+            document.getElementById('etaDist').textContent = `📍 ${distText} por carretera`;
+            // Sync updated ETA to restaurant panels immediately
+            syncETAToRestaurant();
         }
+    } catch(e) {
+        // Worker request failed — will retry automatically on the next
+        // cycle (throttled to once every 60 seconds)
     }
 }
 
